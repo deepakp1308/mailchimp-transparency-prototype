@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mailchimp · Marketing Dashboard · Transparency v0</title>
+<link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue&display=swap" rel="stylesheet">
+<style>
+  /* ======================================================
+     Mailchimp Marketing Dashboard — Metric Transparency v0
+     Tokens preserved exactly from Mailchimp design system
+     ====================================================== */
+
+  :root{
+    --mc-yellow:#FFE01B;
+    --teal:#007C89;
+    --teal-dark:#005f69;
+    --teal-tint:#E6F2F3;
+    --text:#241C15;
+    --text-2:#6A737C;
+    --border:#E8EAED;
+    --bg:#FFFFFF;
+    --bg-soft:#F7F8FA;
+    --success-bg:#D1E9CE;
+    --success-fg:#007A3D;
+    --warning-bg:#FADCD4;
+    --warning-fg:#C83B27;
+    --modeled-bg:#EEE6FB;
+    --modeled-fg:#5B3FA9;
+    --delayed-bg:#FFF4D6;
+    --delayed-fg:#7A5A00;
+    --partial-bg:#FFE5D0;
+    --partial-fg:#A24A00;
+    --differs-bg:#D9ECFA;
+    --differs-fg:#0F4F8A;
+    --chart-blue:#0070D2;
+    --chart-purple:#A78BFA;
+    --chart-pink:#EC4899;
+    --chart-teal:#00B2A9;
+    --green:#1AAB68;
+    --red:#D13438;
+    --ghost:#E8EAED;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg-soft);color:var(--text);
+    font-family:"Helvetica Neue",-apple-system,Helvetica,Arial,sans-serif;
+    font-size:14px;line-height:1.45}
+
+  /* ============= Layout ============= */
+  .app{display:flex;min-height:100vh}
+  .sidebar{width:240px;background:#fff;border-right:1px solid var(--border);
+    flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+  .yellow-bar{height:6px;background:var(--mc-yellow)}
+  .logo{padding:14px 20px;font-size:28px}
+  .nav-create{margin:6px 16px 18px;padding:9px 14px;border:1px solid var(--text);
+    border-radius:6px;background:#fff;font-weight:500;cursor:pointer;display:flex;
+    align-items:center;gap:8px;font-size:13px}
+  .nav-create:hover{background:#f3f3f3}
+  .nav{padding:0 8px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;
+    color:var(--text);cursor:pointer;font-size:13px}
+  .nav-item:hover{background:#f3f3f3}
+  .nav-item.active{background:#f0f6f7;color:var(--teal);font-weight:500}
+  .nav-item .ico{width:16px;text-align:center;font-size:14px}
+  .nav-sub{margin-left:26px}
+  .nav-sub .nav-item{font-size:12.5px;padding:6px 10px;color:var(--text-2)}
+  .nav-sub .nav-item.active{color:var(--teal);background:transparent;font-weight:600}
+  .badge-new{background:var(--teal-tint);color:var(--teal);font-size:10px;
+    padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:600}
+
+  .main{flex:1;display:flex;flex-direction:column}
+  .topbar{height:48px;background:#fff;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+    position:sticky;top:0;z-index:10}
+  .search{width:520px;height:30px;border:1px solid var(--border);border-radius:4px;
+    padding:0 12px;background:#fff;display:flex;align-items:center;color:var(--text-2)}
+  .search input{flex:1;border:none;outline:none;background:transparent;font-size:13px}
+  .topbar-right{display:flex;align-items:center;gap:14px;color:var(--text-2);font-size:13px}
+  .live-help{color:var(--success-fg);font-size:12px;display:flex;align-items:center;gap:4px}
+  .live-help::before{content:"";width:6px;height:6px;background:var(--success-fg);border-radius:50%}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px}
+
+  .page{padding:24px 28px 56px;max-width:1280px;margin:0 auto;width:100%}
+  .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .page-title{font-size:24px;font-weight:600;margin:0}
+  .page-actions{display:flex;align-items:center;gap:10px}
+  .btn-ghost{background:#fff;border:1px solid var(--border);border-radius:4px;
+    padding:7px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px}
+  .btn-ghost:hover{background:#f3f3f3}
+
+  /* ============= Filter row ============= */
+  .filter-row{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:12px;
+    background:#fff;border:1px solid var(--border);border-radius:6px;padding:14px;
+    margin-bottom:16px;align-items:end}
+  .filter-row label{font-size:11px;color:var(--text-2);display:block;margin-bottom:4px}
+  .filter-row select,.filter-row .fake-input{width:100%;height:32px;border:1px solid var(--border);
+    border-radius:4px;padding:0 10px;background:#fff;font-size:13px;color:var(--text)}
+  .bot-pill{display:flex;align-items:center;gap:6px;color:var(--text);font-size:12px;
+    height:32px;padding:0 4px}
+  .bot-pill::before{content:"";width:6px;height:6px;background:var(--teal);border-radius:50%}
+
+  /* ============= Card ============= */
+  .card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px;
+    margin-bottom:16px}
+  .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+  .card-title{font-size:18px;font-weight:600;margin:0;display:flex;align-items:center;gap:8px}
+  .card-sub{font-size:12px;color:var(--text-2);margin:0 0 16px}
+  .card-toggle{display:flex;background:#f3f3f3;border-radius:5px;padding:2px}
+  .card-toggle span{padding:5px 12px;font-size:12px;color:var(--text-2);border-radius:4px;
+    cursor:pointer}
+  .card-toggle span.active{background:#fff;color:var(--text);font-weight:500;
+    box-shadow:0 1px 2px rgba(0,0,0,.05)}
+
+  /* ============= Section freshness pill ============= */
+  .freshness-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;
+    color:var(--text-2);background:var(--bg-soft);border:1px solid var(--border);
+    border-radius:999px;padding:3px 10px;cursor:help;font-weight:500}
+  .freshness-pill .dot{width:6px;height:6px;border-radius:50%}
+  .freshness-pill.fresh .dot{background:var(--green)}
+  .freshness-pill.delayed .dot{background:var(--delayed-fg)}
+  .freshness-pill.partial .dot{background:var(--partial-fg)}
+
+  /* ============= KPI grid ============= */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
+    padding:8px 0 4px}
+  .kpi{display:flex;flex-direction:column;gap:6px;position:relative}
+  .kpi-label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)}
+  .kpi-label .lbl{border-bottom:1px dotted var(--text-2);cursor:pointer}
+  .kpi-label .lbl:hover{color:var(--teal);border-color:var(--teal)}
+  .kpi-icon{font-size:13px;color:var(--text-2);width:14px;display:inline-flex}
+  .kpi-value{font-size:28px;font-weight:600;font-family:inherit;line-height:1.1;letter-spacing:-.5px}
+  .kpi-delta{font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:3px;
+    padding:2px 6px;border-radius:3px;width:fit-content}
+  .kpi-delta.down{background:var(--warning-bg);color:var(--warning-fg)}
+  .kpi-delta.up{background:var(--success-bg);color:var(--success-fg)}
+  .kpi-meta{font-size:11px;color:var(--text-2);display:flex;align-items:center;gap:8px;margin-top:2px}
+  .kpi-meta .row{display:flex;align-items:center;gap:5px}
+
+  /* ============= Trust Badge ============= */
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;
+    padding:2px 7px;border-radius:3px;letter-spacing:.2px;line-height:1.4;cursor:pointer;
+    border:1px solid transparent}
+  .badge:hover{filter:brightness(0.97)}
+  .badge.official{background:var(--success-bg);color:var(--success-fg)}
+  .badge.modeled{background:var(--modeled-bg);color:var(--modeled-fg)}
+  .badge.delayed{background:var(--delayed-bg);color:var(--delayed-fg)}
+  .badge.partial{background:var(--partial-bg);color:var(--partial-fg)}
+  .badge.differs{background:var(--differs-bg);color:var(--differs-fg)}
+
+  /* ============= Hover tooltip (Layer 1) ============= */
+  .hover-tip{position:absolute;z-index:100;width:280px;background:var(--text);
+    color:#fff;padding:10px 12px;border-radius:6px;font-size:12px;line-height:1.5;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);pointer-events:none;opacity:0;
+    transform:translateY(-4px);transition:opacity .12s,transform .12s}
+  .hover-tip.show{opacity:1;transform:translateY(0);pointer-events:auto}
+  .hover-tip::after{content:"";position:absolute;bottom:-5px;left:18px;
+    width:10px;height:10px;background:var(--text);transform:rotate(45deg)}
+  .hover-tip .tip-def{color:#fff}
+  .hover-tip .tip-cta{margin-top:6px;color:#90c8d3;font-size:11px;font-weight:500;
+    display:flex;align-items:center;gap:4px;cursor:pointer;pointer-events:auto}
+  .hover-tip .tip-cta:hover{color:#fff}
+
+  /* ============= Recipe Card (Layer 2) ============= */
+  .recipe-overlay{position:fixed;inset:0;background:rgba(36,28,21,.35);z-index:200;
+    display:none;align-items:center;justify-content:center;padding:32px;backdrop-filter:blur(2px)}
+  .recipe-overlay.show{display:flex}
+  .recipe{background:#fff;width:560px;max-width:100%;max-height:88vh;border-radius:10px;
+    box-shadow:0 12px 40px rgba(0,0,0,.18);overflow:hidden;display:flex;flex-direction:column}
+  .recipe-head{padding:18px 22px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between}
+  .recipe-title-wrap{display:flex;align-items:center;gap:10px}
+  .recipe-title{font-size:18px;font-weight:600;margin:0}
+  .recipe-close{font-size:20px;color:var(--text-2);cursor:pointer;background:none;border:none;
+    width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center}
+  .recipe-close:hover{background:#f3f3f3;color:var(--text)}
+  .recipe-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 22px;
+    gap:4px;overflow-x:auto}
+  .recipe-tab{padding:11px 12px;font-size:13px;color:var(--text-2);cursor:pointer;
+    border-bottom:2px solid transparent;font-weight:500;white-space:nowrap}
+  .recipe-tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:600}
+  .recipe-tab:hover:not(.active){color:var(--text)}
+  .recipe-body{padding:20px 22px;overflow-y:auto;flex:1}
+
+  .lbl{font-size:10px;color:var(--text-2);letter-spacing:1.2px;font-weight:600;
+    text-transform:uppercase;margin-bottom:8px}
+
+  .meaning-block{font-size:14px;line-height:1.65;color:var(--text)}
+  .meaning-block p{margin:0 0 12px}
+  .meaning-block .ctx{background:var(--bg-soft);border-left:3px solid var(--teal);
+    padding:10px 14px;border-radius:0 4px 4px 0;font-size:13px;color:var(--text-2)}
+
+  .formula-pill{display:inline-block;background:var(--bg-soft);border:1px solid var(--border);
+    border-radius:6px;padding:10px 14px;font-family:"SF Mono",Monaco,Consolas,monospace;
+    font-size:13px;color:var(--teal);margin-bottom:14px}
+  .lineage-step{display:flex;align-items:flex-start;gap:12px;padding:8px 0}
+  .lineage-num{width:22px;height:22px;border-radius:50%;background:var(--teal-tint);
+    color:var(--teal);font-size:11px;font-weight:700;display:flex;align-items:center;
+    justify-content:center;flex-shrink:0;margin-top:1px}
+  .lineage-text{flex:1}
+  .lineage-text .step-label{font-size:13px;font-weight:500;color:var(--text)}
+  .lineage-text .step-sub{font-size:12px;color:var(--text-2);margin-top:1px}
+  .lineage-line{margin-left:11px;height:8px;border-left:2px dotted var(--border)}
+
+  .source-row{background:var(--bg-soft);border:1px solid var(--border);border-radius:6px;
+    padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;font-size:13px}
+  .source-row .src-icon{width:20px;height:20px;border-radius:4px;background:#fff;
+    border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+    font-size:11px;flex-shrink:0;font-weight:700}
+  .settings-pill{display:inline-flex;font-size:11px;color:var(--text-2);
+    background:var(--bg-soft);border:1px solid var(--border);
+    border-radius:999px;padding:3px 10px;margin-right:5px;margin-bottom:5px}
+
+  .trust-row{display:flex;justify-content:space-between;align-items:center;
+    padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .trust-row:last-child{border:none}
+  .trust-row .lhs{color:var(--text-2)}
+  .trust-row .rhs{display:flex;align-items:center;gap:6px;font-weight:500}
+  .trust-row .rhs .stat{width:7px;height:7px;border-radius:50%}
+  .trust-row .rhs.green{color:var(--success-fg)}
+  .trust-row .rhs.green .stat{background:var(--success-fg)}
+  .trust-row .rhs.amber{color:var(--delayed-fg)}
+  .trust-row .rhs.amber .stat{background:var(--delayed-fg)}
+  .progress-track{height:6px;background:var(--ghost);border-radius:3px;
+    overflow:hidden;margin-top:14px}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--chart-teal))}
+  .progress-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-2);
+    margin-top:6px}
+
+  .compare-row{background:var(--bg-soft);border:1px solid var(--border);border-radius:6px;
+    padding:12px 14px;margin-bottom:8px}
+  .compare-row .platform{font-size:13px;font-weight:600;color:var(--differs-fg);
+    display:flex;align-items:center;gap:8px}
+  .compare-row .why{font-size:12px;color:var(--text-2);margin-top:4px;line-height:1.55}
+  .reconcile-cta{margin-top:8px;padding:10px 14px;background:var(--teal);color:#fff;
+    border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;display:flex;
+    align-items:center;justify-content:space-between}
+  .reconcile-cta:hover{background:var(--teal-dark)}
+  .reconcile-cta .arrow{font-size:14px}
+
+  .ai-prompt{background:var(--bg-soft);border:1px solid var(--border);border-radius:6px;
+    padding:10px 14px;margin-bottom:6px;font-size:13px;color:var(--text);cursor:pointer;
+    display:flex;align-items:center;gap:10px}
+  .ai-prompt:hover{background:var(--teal-tint);border-color:var(--teal)}
+  .ai-prompt .star{color:var(--teal);font-size:13px}
+  .ai-foot{margin-top:12px;font-size:11px;color:var(--text-2);font-style:italic}
+
+  .recipe-actions{padding:14px 22px;border-top:1px solid var(--border);
+    background:var(--bg-soft);display:flex;gap:8px;flex-wrap:wrap}
+  .recipe-actions .act{font-size:12px;color:var(--teal);background:#fff;border:1px solid var(--border);
+    border-radius:5px;padding:6px 12px;cursor:pointer;font-weight:500}
+  .recipe-actions .act:hover{background:var(--teal-tint);border-color:var(--teal)}
+
+  /* ============= Reconciliation drawer (Layer 3) ============= */
+  .drawer-overlay{position:fixed;inset:0;background:rgba(36,28,21,.4);z-index:300;
+    display:none;backdrop-filter:blur(3px)}
+  .drawer-overlay.show{display:block}
+  .drawer{position:fixed;right:0;top:0;height:100vh;width:540px;max-width:100%;
+    background:#fff;z-index:301;transform:translateX(100%);transition:transform .25s ease;
+    display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,.12)}
+  .drawer.show{transform:translateX(0)}
+  .drawer-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;
+    align-items:center;justify-content:space-between}
+  .drawer-head h2{font-size:18px;font-weight:600;margin:0}
+  .drawer-body{padding:22px;overflow-y:auto;flex:1}
+  .compare-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  .compare-card{border:1px solid var(--border);border-radius:8px;padding:14px}
+  .compare-card.mc{background:#FFFCEB;border-color:var(--mc-yellow)}
+  .compare-card.shop{background:#F0FDF4;border-color:#95bf47}
+  .compare-card .src-name{font-size:11px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.5px;margin-bottom:6px}
+  .compare-card.mc .src-name{color:#7A5A00}
+  .compare-card.shop .src-name{color:#3F7325}
+  .compare-card .v{font-size:24px;font-weight:700;letter-spacing:-.5px;margin-bottom:2px}
+  .compare-card .desc{font-size:11px;color:var(--text-2);line-height:1.5}
+  .gap-card{background:#FFF5F2;border:1px solid #F5C6BA;border-radius:8px;padding:14px;
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .gap-card .gap-num{font-size:22px;font-weight:700;color:var(--warning-fg)}
+  .gap-card .gap-lbl{font-size:10px;color:var(--warning-fg);font-weight:700;
+    text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+  .gap-card .toggle-reasons{background:#fff;color:var(--warning-fg);border:1px solid #F5C6BA;
+    border-radius:5px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer}
+  .gap-card .toggle-reasons:hover{background:var(--warning-bg)}
+  .reason-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+  .reason-row:last-child{border:none}
+  .reason-num{width:22px;height:22px;border-radius:50%;background:#FFF5F2;color:var(--warning-fg);
+    font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .reason-text{font-size:13px;color:var(--text);line-height:1.6}
+
+  /* ============= Performance over time chart ============= */
+  .chart-wrap{display:grid;grid-template-columns:1fr 200px;gap:24px;margin-top:16px}
+  .chart{height:240px;border-bottom:1px solid var(--border);position:relative;display:flex;
+    align-items:flex-end;gap:4px;padding-bottom:24px}
+  .chart-y{position:absolute;left:-30px;top:0;bottom:24px;display:flex;flex-direction:column;
+    justify-content:space-between;font-size:10px;color:var(--text-2)}
+  .chart-bar-wrap{flex:1;display:flex;align-items:flex-end;justify-content:center;height:100%;
+    cursor:pointer;position:relative}
+  .chart-bar{width:6px;background:var(--chart-blue);border-radius:2px 2px 0 0;min-height:2px;
+    transition:all .15s}
+  .chart-bar-wrap:hover .chart-bar{background:var(--teal);width:8px}
+  .chart-bar-wrap.selected .chart-bar{background:var(--teal);width:8px;
+    box-shadow:0 0 0 3px var(--teal-tint)}
+  .chart-x{position:absolute;bottom:4px;left:0;right:0;display:flex;justify-content:space-between;
+    font-size:10px;color:var(--text-2)}
+  .chart-side .label{font-size:12px;color:var(--text-2);margin-bottom:4px}
+  .chart-side .val{font-size:18px;font-weight:600;margin-bottom:14px}
+  .chart-legend{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2);
+    margin-top:10px;justify-content:flex-end}
+  .chart-legend .swatch{width:8px;height:8px;background:var(--chart-blue);border-radius:50%}
+
+  /* Chart mark explainer */
+  .mark-explainer{margin-top:18px;background:var(--bg-soft);border:1px solid var(--border);
+    border-radius:8px;padding:14px 16px}
+  .mark-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .mark-head .date{color:var(--teal);font-weight:600;font-size:13px}
+  .mark-head .val{font-size:16px;font-weight:600}
+  .mark-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px}
+  .mark-grid .k{font-size:11px;color:var(--text-2)}
+  .mark-grid .v{font-size:13px;color:var(--text);font-weight:500}
+  .mark-why{font-size:13px;color:var(--success-fg);background:#F2FAF3;border:1px solid #D1E9CE;
+    padding:10px 12px;border-radius:6px;line-height:1.55}
+
+  /* ============= Funnel ============= */
+  .funnel-tabs{display:flex;gap:18px;margin:6px 0 16px;border-bottom:1px solid var(--border)}
+  .funnel-tabs .ft{padding:10px 0;font-size:13px;color:var(--text-2);cursor:pointer;
+    border-bottom:2px solid transparent;font-weight:500;margin-bottom:-1px}
+  .funnel-tabs .ft.active{color:var(--text);border-bottom-color:var(--text);font-weight:600}
+  .rev-per{font-size:12px;color:var(--text-2);margin-bottom:4px}
+  .rev-val{font-size:24px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+  .funnel{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;height:120px;
+    align-items:flex-end;margin:8px 0}
+  .funnel-bar{position:relative;height:100%;background:var(--ghost);border-radius:4px;
+    overflow:hidden}
+  .funnel-fill{position:absolute;bottom:0;left:0;right:0;background:var(--chart-purple);
+    border-radius:4px}
+  .funnel-fill.empty{background:transparent;border:1px dashed var(--border)}
+  .funnel-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:14px}
+  .funnel-step{display:flex;flex-direction:column;gap:4px}
+  .funnel-step .step-label{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2)}
+  .funnel-step .step-label .lbl{border-bottom:1px dotted var(--text-2);cursor:pointer}
+  .funnel-step .step-label .lbl:hover{color:var(--teal);border-color:var(--teal)}
+  .funnel-step .step-val{font-size:18px;font-weight:600}
+  .funnel-step .drop{font-size:11px;color:var(--text-2)}
+  .funnel-step .drop .arrow{color:var(--red);margin-right:2px}
+
+  /* ============= Compare callout ============= */
+  .ai-bar{margin-top:14px;background:var(--teal-tint);border:1px solid #B8DDE0;
+    border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px;
+    font-size:13px;color:var(--text)}
+  .ai-bar .star{color:var(--teal);font-size:14px}
+  .ai-bar a{color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer}
+  .ai-bar a:hover{text-decoration:underline}
+
+  /* ============= Footer link ============= */
+  .footer-row{text-align:center;padding:18px 0 8px;font-size:12px;color:var(--text-2)}
+  .footer-row a{color:var(--teal);text-decoration:none;font-weight:500}
+  .footer-row a:hover{text-decoration:underline}
+
+  /* ============= Banner / explainer ============= */
+  .legend-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;font-size:11px;color:var(--text-2);
+    align-items:center}
+  .legend-row .l-item{display:flex;align-items:center;gap:5px}
+
+  /* ============= Misc ============= */
+  .v-info{color:var(--teal);cursor:pointer;font-size:12px}
+  .delta-arrow{font-size:9px}
+
+  /* Annotation strip for prototype */
+  .proto-strip{background:#241C15;color:#fff;font-size:11px;padding:7px 24px;
+    text-align:center;letter-spacing:.3px}
+  .proto-strip strong{color:var(--mc-yellow)}
+</style>
+</head>
+<body>
+
+<div class="proto-strip">
+  <strong>PROTOTYPE — Metric Transparency v0</strong> · per-metric Ask AI · per-section freshness · Trust Badge → Hover → Recipe Card → Reconciliation · v0 scope: Opens · Clicks · Revenue · Conversions
+</div>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="yellow-bar"></div>
+    <div class="logo">🐵</div>
+    <button class="nav-create">✏️ Create</button>
+    <nav class="nav">
+      <div class="nav-item"><span class="ico">🏠</span>Home</div>
+      <div class="nav-item"><span class="ico">📨</span>Campaigns</div>
+      <div class="nav-item"><span class="ico">⚡</span>Automations</div>
+      <div class="nav-item"><span class="ico">💬</span>SMS</div>
+      <div class="nav-item"><span class="ico">📝</span>Forms<span class="badge-new">New</span></div>
+      <div class="nav-item"><span class="ico">👥</span>Audience</div>
+      <div class="nav-item active"><span class="ico">📊</span>Analytics</div>
+      <div class="nav-sub">
+        <div class="nav-item active">Audience</div>
+        <div class="nav-item">Reports</div>
+        <div class="nav-item">Conversion insights<span class="badge-new">New</span></div>
+        <div class="nav-item">Custom reports</div>
+      </div>
+      <div class="nav-item"><span class="ico">🌐</span>Website</div>
+      <div class="nav-item"><span class="ico">🎨</span>Content</div>
+      <div class="nav-item"><span class="ico">🧩</span>Integrations</div>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div></div>
+      <div class="search">🔍 <input placeholder="Search…"/></div>
+      <div class="topbar-right">
+        <span class="live-help">Live expert help</span>
+        <div class="avatar">D</div>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="page-header">
+        <h1 class="page-title">Marketing dashboard</h1>
+        <div class="page-actions">
+          <button class="btn-ghost">⚙️ Analytics settings</button>
+        </div>
+      </div>
+
+      <!-- Filter row -->
+      <div class="filter-row">
+        <div>
+          <label>Audience</label>
+          <select><option>Goodnight Fox</option></select>
+        </div>
+        <div>
+          <label>Date range</label>
+          <select><option>Last 30 days</option></select>
+        </div>
+        <div>
+          <label>Comparison</label>
+          <select><option>Audience averages</option></select>
+        </div>
+        <div>
+          <label>Filter by message name</label>
+          <select><option>3 messages selected</option></select>
+        </div>
+        <div class="bot-pill">Bot filtering on</div>
+      </div>
+
+      <!-- ===== Monitor performance card ===== -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">Monitor performance ✏️</h2>
+            <p class="card-sub">Apr 2, 2026 — May 1, 2026 · Compared to audience averages</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="freshness-pill fresh" title="All metrics in this section updated 12 minutes ago">
+              <span class="dot"></span>Engagement · updated 12m ago
+            </span>
+            <div class="card-toggle">
+              <span class="active">All</span><span>Email</span><span>SMS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-row">
+
+          <!-- KPI: Revenue -->
+          <div class="kpi" data-metric="revenue">
+            <div class="kpi-label">
+              <span class="kpi-icon">🛒</span>
+              <span class="lbl" data-tip="revenue">Revenue</span>
+            </div>
+            <div class="kpi-value">$0</div>
+            <span class="badge differs" data-recipe="revenue">Differs from Shopify</span>
+            <div class="kpi-meta">
+              <div class="row">💳 <span>$0</span></div>
+              <div class="row">📱 <span>$0</span></div>
+            </div>
+          </div>
+
+          <!-- KPI: Avg order revenue -->
+          <div class="kpi" data-metric="aor">
+            <div class="kpi-label">
+              <span class="kpi-icon">🛒</span>
+              <span class="lbl" data-tip="aor">Average order revenue</span>
+            </div>
+            <div class="kpi-value">$0</div>
+            <div class="kpi-meta">
+              <div class="row">💳 <span>$0</span></div>
+              <div class="row">📱 <span>$0</span></div>
+            </div>
+          </div>
+
+          <!-- KPI: Orders -->
+          <div class="kpi" data-metric="orders">
+            <div class="kpi-label">
+              <span class="kpi-icon">🛒</span>
+              <span class="lbl" data-tip="orders">Orders</span>
+            </div>
+            <div class="kpi-value">0</div>
+            <div class="kpi-meta">
+              <div class="row">💳 <span>0</span></div>
+              <div class="row">📱 <span>0</span></div>
+            </div>
+          </div>
+
+          <!-- KPI: Click rate -->
+          <div class="kpi" data-metric="clickrate">
+            <div class="kpi-label">
+              <span class="kpi-icon">👆</span>
+              <span class="lbl" data-tip="clickrate">Click rate</span>
+            </div>
+            <div class="kpi-value">0.79%</div>
+            <span class="kpi-delta down">▼ 13.4%</span>
+            <span class="badge official" data-recipe="clickrate">Official</span>
+            <div class="kpi-meta">
+              <div class="row">💳 <span>0.79%</span></div>
+              <div class="row">📱 <span>0%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Performance over time card ===== -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">Performance over time</h2>
+            <p class="card-sub">Apr 2, 2026 — May 1, 2026 · Compared to audience averages</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="freshness-pill fresh"><span class="dot"></span>Engagement · updated 12m ago</span>
+            <div class="card-toggle">
+              <span class="active">Day</span><span>Week</span><span>Month</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+          <span class="lbl" data-tip="clickrate" style="text-transform:none;letter-spacing:0;font-size:12px;border-bottom:1px dotted var(--text-2);font-weight:400;color:var(--text);cursor:pointer">Click rate</span>
+          <span style="font-size:11px;color:var(--text-2)">Metric:</span>
+          <span style="font-size:12px;color:var(--teal);font-weight:500;cursor:pointer">👆 Click rate ▾</span>
+        </div>
+        <div style="font-size:24px;font-weight:600;margin-top:4px">0.79% <span style="font-size:14px;color:var(--text-2);font-weight:400">--</span></div>
+
+        <div class="chart-wrap">
+          <div style="position:relative;padding-left:30px">
+            <div class="chart-y">
+              <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
+            </div>
+            <div class="chart" id="chart"></div>
+          </div>
+          <div class="chart-side">
+            <div class="label">Total message count</div>
+            <div class="val">3</div>
+            <div class="label">Total messages sent</div>
+            <div class="val">9,680</div>
+            <div class="chart-legend"><span class="swatch"></span>Click rate</div>
+          </div>
+        </div>
+
+        <div class="mark-explainer" id="mark-explainer" style="display:none">
+          <div class="mark-head">
+            <span class="date" id="me-date">Apr 21</span>
+            <span class="val" id="me-val">0.85%</span>
+          </div>
+          <div class="lbl">What contributed</div>
+          <div class="mark-grid">
+            <span class="k">Campaigns sent</span><span class="v">2</span>
+            <span class="k">Recipients delivered</span><span class="v">3,420</span>
+            <span class="k">Unique clickers</span><span class="v">29</span>
+            <span class="k">Top campaign</span><span class="v">Spring Promo</span>
+          </div>
+          <div class="lbl">Why it changed</div>
+          <div class="mark-why">Click rate was 8% above the prior 7-day average. Driver: a re-engagement send to returning subscribers performed 2.1× better than typical.</div>
+          <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">
+            <span class="recipe-actions act" style="font-size:11px;cursor:pointer">✦ Why did this spike?</span>
+            <span class="recipe-actions act" style="font-size:11px;cursor:pointer">✦ Compare with last week</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Conversions card ===== -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">Conversions</h2>
+            <p class="card-sub">Apr 2, 2026 — May 1, 2026 · Compared to audience averages</p>
+          </div>
+          <span class="freshness-pill delayed" title="Shopify order sync 98% complete · finalizes within 2h">
+            <span class="dot"></span>Commerce · 98% complete
+          </span>
+        </div>
+
+        <div class="funnel-tabs">
+          <span class="ft active">Conversion funnel</span>
+          <span class="ft">Conversions over time</span>
+        </div>
+
+        <div class="rev-per">
+          <span class="lbl" style="text-transform:none;letter-spacing:0;font-size:12px;border-bottom:1px dotted var(--text-2);font-weight:400;cursor:pointer" data-tip="revpr">Revenue per recipient</span>
+        </div>
+        <div class="rev-val">$0 <span style="font-size:13px;color:var(--text-2);font-weight:400">--</span> <span class="badge differs" data-recipe="revenue">Differs from Shopify</span></div>
+
+        <div class="funnel">
+          <div class="funnel-bar"><div class="funnel-fill" style="height:100%"></div></div>
+          <div class="funnel-bar"><div class="funnel-fill" style="height:65%"></div></div>
+          <div class="funnel-bar"><div class="funnel-fill" style="height:8%"></div></div>
+          <div class="funnel-bar"><div class="funnel-fill empty" style="height:1%"></div></div>
+          <div class="funnel-bar"><div class="funnel-fill empty" style="height:1%"></div></div>
+        </div>
+
+        <div class="funnel-labels">
+          <div class="funnel-step">
+            <div class="step-label"><span class="lbl" data-tip="deliveries">Deliveries</span></div>
+            <div class="step-val">9,645</div>
+            <div class="drop">—</div>
+            <span class="badge official" data-recipe="deliveries">Official</span>
+          </div>
+          <div class="funnel-step">
+            <div class="step-label"><span class="lbl" data-tip="opens">Opened</span></div>
+            <div class="step-val">1,000</div>
+            <div class="drop"><span class="arrow">▼</span>35.2% Drop-off</div>
+            <span class="badge official" data-recipe="opens">Official</span>
+          </div>
+          <div class="funnel-step">
+            <div class="step-label"><span class="lbl" data-tip="clicks">Clicked</span></div>
+            <div class="step-val">76</div>
+            <div class="drop"><span class="arrow">▼</span>98.8% Drop-off</div>
+            <span class="badge official" data-recipe="clicks">Official</span>
+          </div>
+          <div class="funnel-step">
+            <div class="step-label"><span class="lbl" data-tip="orders">Orders</span></div>
+            <div class="step-val">0</div>
+            <div class="drop"><span class="arrow">▼</span>100% Drop-off</div>
+            <span class="badge differs" data-recipe="orders">Differs from Shopify</span>
+          </div>
+          <div class="funnel-step">
+            <div class="step-label"><span class="lbl" data-tip="revenue-funnel">Revenue</span></div>
+            <div class="step-val">$0</div>
+            <div class="drop">—</div>
+            <span class="badge differs" data-recipe="revenue">Differs from Shopify</span>
+          </div>
+        </div>
+
+        <div class="ai-bar">
+          <span class="star">✦</span>
+          <span>The Orders step shows 0 but Shopify shows 4 orders this period. <a data-recipe="revenue" data-open-tab="compare">Compare with Shopify →</a></span>
+        </div>
+
+        <div class="legend-row" style="margin-top:14px">
+          <span class="l-item"><span class="badge official" style="cursor:default">Official</span> Mailchimp-certified, near-real-time</span>
+          <span class="l-item"><span class="badge differs" style="cursor:default">Differs from Shopify</span> Reconcile available</span>
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <a href="#methodology">View methodology &amp; metric definitions →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Layer 1: Hover tip ===== -->
+<div class="hover-tip" id="hover-tip">
+  <div class="tip-def" id="tip-def"></div>
+  <div class="tip-cta" id="tip-cta">Click for full breakdown →</div>
+</div>
+
+<!-- ===== Layer 2: Recipe Card overlay ===== -->
+<div class="recipe-overlay" id="recipe-overlay">
+  <div class="recipe">
+    <div class="recipe-head">
+      <div class="recipe-title-wrap">
+        <h2 class="recipe-title" id="r-title">Revenue</h2>
+        <span class="badge" id="r-badge">Official</span>
+      </div>
+      <button class="recipe-close" onclick="closeRecipe()">✕</button>
+    </div>
+
+    <div class="recipe-tabs" id="r-tabs">
+      <span class="recipe-tab active" data-tab="meaning">Meaning</span>
+      <span class="recipe-tab" data-tab="formula">Formula</span>
+      <span class="recipe-tab" data-tab="sources">Sources</span>
+      <span class="recipe-tab" data-tab="trust">Trust</span>
+      <span class="recipe-tab" data-tab="compare">Compare</span>
+      <span class="recipe-tab" data-tab="ai">Ask AI</span>
+    </div>
+
+    <div class="recipe-body" id="r-body"></div>
+
+    <div class="recipe-actions">
+      <span class="act" onclick="switchTab('compare')">Compare with Shopify</span>
+      <span class="act" onclick="switchTab('ai')">✦ Ask Analytics AI</span>
+      <span class="act">View methodology</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Layer 3: Reconciliation drawer ===== -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h2>Why does this differ from Shopify?</h2>
+    <button class="recipe-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<script>
+/* ==========================================================
+   Metric registry — single source of truth for all 4 metrics
+   ========================================================== */
+const METRICS = {
+  opens: {
+    title: "Opened (Open rate)",
+    badge: {label:"Official", cls:"official"},
+    short: "Recipients who opened your email at least once.",
+    long:  "An open is counted when a recipient downloads tracking pixels in your email. Apple Mail Privacy Protection (MPP) opens are filtered out by Mailchimp's bot detection unless you've turned bot filtering off.",
+    formula: "Unique Openers ÷ Delivered Messages",
+    lineage: [
+      {label:"Campaign sent", sub:"9,680 messages dispatched"},
+      {label:"Email delivered", sub:"9,645 deliveries (35 bounces)"},
+      {label:"Pixel loaded by recipient", sub:"Tracked by Mailchimp open beacon"},
+      {label:"Bot filter applied", sub:"MPP & known bot IPs removed (v3.2)"},
+      {label:"Open recorded", sub:"1,000 unique openers"},
+    ],
+    sources: [
+      {sys:"Mailchimp campaign engagement", icon:"M"},
+      {sys:"Bot filter v3.2 — MPP detection", icon:"B"},
+    ],
+    settings: ["Bot filter: On", "Timezone: Account", "MPP filter: On"],
+    trust: [
+      {label:"Last updated", val:"12 minutes ago", status:"green"},
+      {label:"Processing", val:"Complete", status:"green"},
+      {label:"Known issues", val:"None detected", status:"green"},
+      {label:"Last definition change", val:"Apr 2026 — bot filter v3.2", status:"green"},
+    ],
+    compare: null,
+    ai: [
+      "Why is my open rate dropping vs last month?",
+      "How many of these opens are likely Apple MPP?",
+      "Which segment is opening most?",
+      "Compare opens by send time",
+    ],
+  },
+  clicks: {
+    title: "Clicked (Click rate)",
+    badge: {label:"Official", cls:"official"},
+    short: "Unique recipients who clicked any tracked link in your email.",
+    long:  "Click rate counts unique clickers, not total clicks. The same person clicking 5 links counts once. Bot clicks are filtered using behavioral heuristics.",
+    formula: "Unique Clickers ÷ Delivered Messages",
+    lineage: [
+      {label:"Campaign sent", sub:"9,680 messages dispatched"},
+      {label:"Recipient opens email", sub:"1,000 unique openers"},
+      {label:"Recipient clicks tracked link", sub:"Click redirected through Mailchimp"},
+      {label:"Bot filter applied", sub:"Behavioral heuristic v3.0+"},
+      {label:"Click recorded", sub:"76 unique clickers"},
+    ],
+    sources: [
+      {sys:"Mailchimp link redirect tracker", icon:"M"},
+      {sys:"Bot filter v3.2 — behavioral heuristic", icon:"B"},
+    ],
+    settings: ["Bot filter: On", "Timezone: Account", "Track all links: On"],
+    trust: [
+      {label:"Last updated", val:"12 minutes ago", status:"green"},
+      {label:"Processing", val:"Complete", status:"green"},
+      {label:"Known issues", val:"None detected", status:"green"},
+      {label:"Last definition change", val:"Sep 2025 — bot filter v3.0", status:"green"},
+    ],
+    compare: null,
+    confusion: "This will not match \"Total Clicks\" because Total Clicks counts every click — the same person clicking 5 links shows as 5.",
+    ai: [
+      "Why did click rate drop 13.4%?",
+      "Which link is getting the most clicks?",
+      "Compare click rate by device",
+      "Show top performing campaigns by CTR",
+    ],
+  },
+  clickrate: null, // alias
+  revenue: {
+    title: "Revenue (Attributed)",
+    badge: {label:"Differs from Shopify", cls:"differs"},
+    short: "Revenue from orders attributed to your campaigns within the 5-day click window.",
+    long:  "Mailchimp credits revenue to a campaign when a recipient clicked the campaign and then placed an order in Shopify within the attribution window. This will be lower than total Shopify revenue because it only includes campaign-attributed orders.",
+    formula: "Σ (Attributed Orders × Order Value)",
+    lineage: [
+      {label:"Campaign sent", sub:"9,680 messages dispatched"},
+      {label:"Recipient clicked", sub:"76 unique clickers"},
+      {label:"Visited store", sub:"Tracked via UTM + identity match"},
+      {label:"Order placed in Shopify", sub:"4 orders within store"},
+      {label:"Order webhook received", sub:"Shopify → Mailchimp pipeline"},
+      {label:"Attribution engine matched", sub:"5-day click window applied"},
+      {label:"Revenue attributed", sub:"$0 — no orders matched campaign clicks"},
+    ],
+    sources: [
+      {sys:"Shopify order events", icon:"S"},
+      {sys:"Mailchimp campaign engagement", icon:"M"},
+      {sys:"Attribution engine v2.4", icon:"A"},
+    ],
+    settings: ["Attribution: 5-day click", "Timezone: Account", "Bot filter: On"],
+    trust: [
+      {label:"Last updated", val:"38 minutes ago", status:"amber"},
+      {label:"Processing", val:"98% complete — finalizes in ~2 hours", status:"amber"},
+      {label:"Known issues", val:"Shopify order sync running behind", status:"amber"},
+      {label:"Last definition change", val:"Apr 2026 — attribution engine v2.4", status:"green"},
+    ],
+    compare: [
+      {platform:"Shopify", icon:"S", desc:"Shows total store revenue — all orders, regardless of source. Mailchimp shows only orders attributed to a campaign click within 5 days."},
+      {platform:"Triple Whale", icon:"T", desc:"May use a different attribution window or include view-through. Compare attribution windows in your Triple Whale settings."},
+      {platform:"GA4", icon:"G", desc:"Uses session-based identity stitching. Mailchimp uses email identity, so cross-device journeys may match differently."},
+      {platform:"Meta Ads", icon:"M", desc:"Uses 7-day view + 1-day click by default. Mailchimp uses 5-day click only."},
+    ],
+    reconcile: {
+      mc: {value:"$0", label:"Revenue attributed to your campaigns"},
+      shop: {value:"$418", label:"Total store revenue (4 orders)"},
+      gap: "$418",
+      reasons: [
+        "Shopify includes all orders. Mailchimp includes only orders that came from a campaign click within 5 days.",
+        "Your attribution window is 5 days after click. Orders placed >5 days after the campaign click won't be attributed.",
+        "Some orders may not have a matching campaign interaction — the buyer found you via direct, search, or another channel.",
+        "Refunds, tax, shipping, or discounts may be handled differently between the two systems.",
+      ],
+    },
+    ai: [
+      "Why is revenue $0 when Shopify shows $418?",
+      "Which orders are excluded by attribution?",
+      "Explain this like I'm new to attribution",
+      "What changed vs last campaign?",
+    ],
+  },
+  orders: {
+    title: "Orders",
+    badge: {label:"Differs from Shopify", cls:"differs"},
+    short: "Orders attributed to your campaigns within the 5-day click window.",
+    long:  "Counts unique orders where the buyer clicked a campaign and placed an order within 5 days. One buyer placing 2 orders counts as 2.",
+    formula: "Count(Orders WHERE matched_campaign_click_within_5d)",
+    lineage: [
+      {label:"Campaign sent", sub:"9,680 messages dispatched"},
+      {label:"Recipient clicked", sub:"76 unique clickers"},
+      {label:"Order placed in Shopify", sub:"4 orders this period"},
+      {label:"Order webhook received", sub:"Shopify → Mailchimp"},
+      {label:"Attribution engine matched", sub:"0 of 4 matched campaign clicks"},
+      {label:"Orders count appears", sub:"0 attributed orders"},
+    ],
+    sources: [
+      {sys:"Shopify order events", icon:"S"},
+      {sys:"Mailchimp campaign engagement", icon:"M"},
+      {sys:"Attribution engine v2.4", icon:"A"},
+    ],
+    settings: ["Attribution: 5-day click", "Timezone: Account"],
+    trust: [
+      {label:"Last updated", val:"38 minutes ago", status:"amber"},
+      {label:"Processing", val:"98% complete — finalizes in ~2 hours", status:"amber"},
+      {label:"Known issues", val:"Shopify order sync running behind", status:"amber"},
+      {label:"Last definition change", val:"Apr 2026 — attribution engine v2.4", status:"green"},
+    ],
+    compare: [
+      {platform:"Shopify", icon:"S", desc:"Shopify shows 4 orders this period (all sources). Mailchimp shows orders that came from a campaign click in the 5-day window."},
+      {platform:"GA4", icon:"G", desc:"GA4 may attribute these to 'Email' channel using its session model — Mailchimp uses identity match instead."},
+    ],
+    reconcile: {
+      mc: {value:"0", label:"Orders attributed to campaigns"},
+      shop: {value:"4", label:"Total Shopify orders"},
+      gap: "4",
+      reasons: [
+        "All 4 Shopify orders this period had no matching campaign click within 5 days. They were direct, search, or organic.",
+        "Your campaign was sent to 9,680 recipients but only 76 clicked. None of the 4 buyers were among the 76 clickers.",
+        "The buyers may have purchased before your latest send went out.",
+        "Check Shopify customer source: if marked 'direct', no campaign attribution will apply.",
+      ],
+    },
+    ai: [
+      "Why are 0 orders attributed when Shopify shows 4?",
+      "Which orders are excluded by attribution?",
+      "Should I extend my attribution window?",
+      "Compare orders by campaign",
+    ],
+  },
+  deliveries: {
+    title: "Deliveries",
+    badge: {label:"Official", cls:"official"},
+    short: "Messages successfully delivered to a recipient inbox.",
+    long:  "A message is counted as delivered when it's accepted by the recipient mail server. Hard bounces, soft bounces, and rejections are excluded.",
+    formula: "Sent − (Hard bounces + Soft bounces + Rejected)",
+    lineage: [
+      {label:"Campaign queued", sub:"9,680 messages prepared"},
+      {label:"SMTP send", sub:"Sent to recipient mail servers"},
+      {label:"Bounce response", sub:"35 bounces (32 hard, 3 soft)"},
+      {label:"Delivered", sub:"9,645 successful deliveries"},
+    ],
+    sources: [{sys:"Mailchimp send infrastructure", icon:"M"}],
+    settings: ["Bounce classification: v2.1", "Timezone: Account"],
+    trust: [
+      {label:"Last updated", val:"12 minutes ago", status:"green"},
+      {label:"Processing", val:"Complete", status:"green"},
+      {label:"Known issues", val:"None detected", status:"green"},
+      {label:"Last definition change", val:"Jan 2026 — bounce classification v2.1", status:"green"},
+    ],
+    compare: null,
+    ai: [
+      "Why did 35 messages bounce?",
+      "Show bounce reasons by domain",
+      "What's a healthy bounce rate?",
+    ],
+  },
+  aor: {
+    title: "Average order revenue",
+    badge: {label:"Differs from Shopify", cls:"differs"},
+    short: "Average revenue per attributed order in the period.",
+    long:  "Calculated only across orders attributed to your campaigns. Shopify's storewide AOV will differ because it includes all orders.",
+    formula: "Attributed Revenue ÷ Attributed Orders",
+    lineage: [
+      {label:"Attributed orders identified", sub:"0 orders this period"},
+      {label:"Sum of order values", sub:"$0"},
+      {label:"Divide by order count", sub:"-- (no orders)"},
+    ],
+    sources: [{sys:"Shopify order events", icon:"S"}, {sys:"Attribution engine v2.4", icon:"A"}],
+    settings: ["Attribution: 5-day click"],
+    trust: [
+      {label:"Last updated", val:"38 minutes ago", status:"amber"},
+      {label:"Processing", val:"98% complete", status:"amber"},
+      {label:"Known issues", val:"Shopify sync delayed", status:"amber"},
+      {label:"Last definition change", val:"Apr 2026", status:"green"},
+    ],
+    compare: null,
+    ai: ["Why is AOV $0?", "How does Shopify storewide AOV compare?"],
+  },
+  revpr: {
+    title: "Revenue per recipient",
+    badge: {label:"Differs from Shopify", cls:"differs"},
+    short: "Attributed revenue divided by total recipients reached.",
+    long:  "How much revenue each recipient is generating, on average. Useful for comparing campaign efficiency.",
+    formula: "Attributed Revenue ÷ Total Recipients",
+    lineage: [
+      {label:"Recipients reached", sub:"9,645 deliveries"},
+      {label:"Attributed revenue", sub:"$0"},
+      {label:"Divide", sub:"$0.00 per recipient"},
+    ],
+    sources: [{sys:"Shopify order events", icon:"S"}, {sys:"Mailchimp campaign engagement", icon:"M"}],
+    settings: ["Attribution: 5-day click"],
+    trust: [
+      {label:"Last updated", val:"38 minutes ago", status:"amber"},
+      {label:"Processing", val:"98% complete", status:"amber"},
+      {label:"Known issues", val:"Shopify sync delayed", status:"amber"},
+      {label:"Last definition change", val:"Apr 2026", status:"green"},
+    ],
+    compare: null,
+    ai: ["What's a healthy revenue per recipient?", "Why is this $0?"],
+  },
+  "revenue-funnel": null, // alias
+};
+// Aliases
+METRICS.clickrate = METRICS.clicks;
+METRICS["revenue-funnel"] = METRICS.revenue;
+
+let currentMetric = "revenue";
+let currentTab = "meaning";
+
+/* ============= Hover tip wiring ============= */
+const tip = document.getElementById("hover-tip");
+const tipDef = document.getElementById("tip-def");
+const tipCta = document.getElementById("tip-cta");
+let tipKey = null;
+
+document.querySelectorAll("[data-tip]").forEach(el=>{
+  el.addEventListener("mouseenter", (e)=>{
+    const k = el.getAttribute("data-tip");
+    const m = METRICS[k];
+    if(!m) return;
+    tipKey = k;
+    tipDef.textContent = m.short;
+    const r = el.getBoundingClientRect();
+    tip.style.left = (r.left + window.scrollX) + "px";
+    tip.style.top = (r.top + window.scrollY - 8 - tip.offsetHeight) + "px";
+    tip.classList.add("show");
+    requestAnimationFrame(()=>{
+      tip.style.top = (r.top + window.scrollY - 12 - tip.offsetHeight) + "px";
+    });
+  });
+  el.addEventListener("mouseleave", ()=>{
+    setTimeout(()=>{ if(!tip.matches(":hover")) tip.classList.remove("show"); },120);
+  });
+  el.addEventListener("click", ()=>{
+    const k = el.getAttribute("data-tip"); openRecipe(k);
+  });
+});
+tip.addEventListener("mouseleave", ()=>tip.classList.remove("show"));
+tipCta.addEventListener("click", ()=>{ if(tipKey) openRecipe(tipKey); });
+
+/* ============= Badge → recipe (open Compare directly if Differs) ============= */
+document.querySelectorAll("[data-recipe]").forEach(el=>{
+  el.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    const k = el.getAttribute("data-recipe");
+    const tab = el.getAttribute("data-open-tab") || (el.classList.contains("differs") ? "compare" : "meaning");
+    openRecipe(k, tab);
+  });
+});
+
+/* ============= Recipe Card ============= */
+const overlay = document.getElementById("recipe-overlay");
+function openRecipe(key, tab="meaning"){
+  const m = METRICS[key];
+  if(!m) return;
+  currentMetric = key;
+  document.getElementById("r-title").textContent = m.title;
+  const badge = document.getElementById("r-badge");
+  badge.className = "badge "+m.badge.cls;
+  badge.textContent = m.badge.label;
+  // Hide compare tab if no compare data
+  document.querySelectorAll("#r-tabs .recipe-tab").forEach(t=>{
+    if(t.dataset.tab==="compare") t.style.display = m.compare ? "" : "none";
+  });
+  if(tab==="compare" && !m.compare) tab = "meaning";
+  switchTab(tab);
+  overlay.classList.add("show");
+  tip.classList.remove("show");
+}
+function closeRecipe(){ overlay.classList.remove("show"); }
+overlay.addEventListener("click",(e)=>{ if(e.target===overlay) closeRecipe(); });
+
+document.querySelectorAll("#r-tabs .recipe-tab").forEach(t=>{
+  t.addEventListener("click", ()=>switchTab(t.dataset.tab));
+});
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll("#r-tabs .recipe-tab").forEach(t=>{
+    t.classList.toggle("active", t.dataset.tab===tab);
+  });
+  const m = METRICS[currentMetric];
+  const body = document.getElementById("r-body");
+  body.innerHTML = renderTab(tab, m);
+  // Wire reconcile CTA if present
+  const cta = body.querySelector("[data-open-drawer]");
+  if(cta) cta.addEventListener("click", ()=>openDrawer(currentMetric));
+}
+
+function renderTab(tab, m){
+  if(tab==="meaning"){
+    let html = `<div class="meaning-block">
+      <p>${m.short}</p>
+      <div class="ctx">${m.long}</div>`;
+    if(m.confusion){
+      html += `<div style="margin-top:12px;padding:10px 14px;background:#FFF5F2;border:1px solid #F5C6BA;border-radius:6px;font-size:12px;color:#8A2A1A">
+        <strong style="color:#C83B27">⚠ Common confusion:</strong> ${m.confusion}</div>`;
+    }
+    html += "</div>";
+    return html;
+  }
+  if(tab==="formula"){
+    let html = `<div class="formula-pill">${m.formula}</div>
+      <div class="lbl">Step by step (lineage)</div>`;
+    m.lineage.forEach((s,i)=>{
+      html += `<div class="lineage-step">
+        <div class="lineage-num">${i+1}</div>
+        <div class="lineage-text">
+          <div class="step-label">${s.label}</div>
+          <div class="step-sub">${s.sub}</div>
+        </div></div>`;
+      if(i<m.lineage.length-1) html += `<div class="lineage-line"></div>`;
+    });
+    return html;
+  }
+  if(tab==="sources"){
+    let html = `<div class="lbl">Data sources</div>`;
+    m.sources.forEach(s=>{
+      html += `<div class="source-row"><div class="src-icon">${s.icon}</div><span>${s.sys}</span></div>`;
+    });
+    html += `<div class="lbl" style="margin-top:14px">Current settings</div>`;
+    m.settings.forEach(s=>{ html += `<span class="settings-pill">${s}</span>`; });
+    return html;
+  }
+  if(tab==="trust"){
+    let html = `<div class="lbl">Data status</div>`;
+    m.trust.forEach(r=>{
+      html += `<div class="trust-row">
+        <span class="lhs">${r.label}</span>
+        <span class="rhs ${r.status}"><span class="stat"></span>${r.val}</span>
+      </div>`;
+    });
+    // progress bar if amber processing
+    const proc = m.trust.find(r=>r.label==="Processing");
+    if(proc && proc.status==="amber"){
+      html += `<div class="progress-track"><div class="progress-fill" style="width:98%"></div></div>
+        <div class="progress-meta"><span>0%</span><span style="color:var(--delayed-fg);font-weight:600">98% complete</span><span>100%</span></div>`;
+    }
+    return html;
+  }
+  if(tab==="compare"){
+    if(!m.compare) return `<div style="color:var(--text-2);font-size:13px">No 3rd-party comparison available for this metric.</div>`;
+    let html = "";
+    m.compare.forEach(c=>{
+      html += `<div class="compare-row">
+        <div class="platform">${c.icon} ${c.platform}</div>
+        <div class="why">${c.desc}</div>
+      </div>`;
+    });
+    if(m.reconcile){
+      html += `<div class="reconcile-cta" data-open-drawer>
+        <span>Open full reconciliation — see why $0 vs $418</span>
+        <span class="arrow">→</span></div>`;
+    }
+    return html;
+  }
+  if(tab==="ai"){
+    let html = `<div class="lbl">Suggested questions about ${m.title}</div>`;
+    m.ai.forEach(q=>{
+      html += `<div class="ai-prompt"><span class="star">✦</span>${q}</div>`;
+    });
+    html += `<div class="ai-foot">Powered by Analytics Agent — answers use your campaign data and respect the metric definition shown in the Formula tab.</div>`;
+    return html;
+  }
+  return "";
+}
+
+/* ============= Reconciliation drawer ============= */
+const drawer = document.getElementById("drawer");
+const drawerBg = document.getElementById("drawer-overlay");
+function openDrawer(key){
+  const m = METRICS[key];
+  if(!m || !m.reconcile) return;
+  const r = m.reconcile;
+  document.getElementById("drawer-body").innerHTML = `
+    <div class="compare-cards">
+      <div class="compare-card mc">
+        <div class="src-name">🐵 Mailchimp</div>
+        <div class="v">${r.mc.value}</div>
+        <div class="desc">${r.mc.label}</div>
+      </div>
+      <div class="compare-card shop">
+        <div class="src-name">🛍 Shopify</div>
+        <div class="v">${r.shop.value}</div>
+        <div class="desc">${r.shop.label}</div>
+      </div>
+    </div>
+    <div class="gap-card">
+      <div>
+        <div class="gap-lbl">Difference</div>
+        <div class="gap-num">${r.gap}</div>
+      </div>
+      <button class="toggle-reasons" onclick="document.getElementById('reason-list').style.display = document.getElementById('reason-list').style.display==='none'?'block':'none'">Show reasons ↓</button>
+    </div>
+    <div id="reason-list" style="display:block">
+      <div class="lbl">Most likely reasons</div>
+      ${r.reasons.map((rs,i)=>`<div class="reason-row">
+        <div class="reason-num">${i+1}</div>
+        <div class="reason-text">${rs}</div>
+      </div>`).join("")}
+    </div>
+    <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap">
+      <span class="recipe-actions act" style="cursor:pointer">Attribution logic</span>
+      <span class="recipe-actions act" style="cursor:pointer">Included orders</span>
+      <span class="recipe-actions act" style="cursor:pointer">Excluded orders</span>
+      <span class="recipe-actions act" style="cursor:pointer">✦ Ask AI to explain</span>
+    </div>
+  `;
+  drawer.classList.add("show");
+  drawerBg.classList.add("show");
+}
+function closeDrawer(){ drawer.classList.remove("show"); drawerBg.classList.remove("show"); }
+
+/* ============= Performance over time chart ============= */
+const chartData = [0.6,0.7,0.5,0.65,0.75,0.7,0.8,0.6,0.5,0.55,0.7,0.85,0.9,0.75,0.8,0.85,0.7,0.6,0.5,0.55,0.6,0.65,0.7,0.55,0.6,0.5,0.45,0.55,0.6,0.65];
+const chart = document.getElementById("chart");
+const dates = ["Apr 02","Apr 04","Apr 06","Apr 08","Apr 10","Apr 12","Apr 14","Apr 16"];
+chartData.forEach((v,i)=>{
+  const wrap = document.createElement("div");
+  wrap.className = "chart-bar-wrap";
+  wrap.dataset.i = i;
+  const bar = document.createElement("div");
+  bar.className = "chart-bar";
+  bar.style.height = (v*100)+"%";
+  wrap.appendChild(bar);
+  wrap.addEventListener("click", ()=>{
+    document.querySelectorAll(".chart-bar-wrap").forEach(w=>w.classList.remove("selected"));
+    wrap.classList.add("selected");
+    const me = document.getElementById("mark-explainer");
+    me.style.display="block";
+    document.getElementById("me-date").textContent = "Apr "+(2+i).toString().padStart(2,"0")+", 2026";
+    document.getElementById("me-val").textContent = (v*100).toFixed(2)+"%";
+  });
+  chart.appendChild(wrap);
+});
+// X axis
+const xAxis = document.createElement("div");
+xAxis.className = "chart-x";
+xAxis.innerHTML = dates.map(d=>`<span>${d}</span>`).join("");
+chart.parentElement.appendChild(xAxis);
+</script>
+</body>
+</html>
