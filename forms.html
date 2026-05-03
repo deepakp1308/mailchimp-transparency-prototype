@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Popup Forms · Mailchimp</title>
+<style>
+  :root{
+    --mc-yellow:#FFE01B; --peppercorn:#241C15; --teal:#007C89; --teal-dark:#005f69;
+    --teal-tint:#E6F2F3; --teal-tint-2:#F2F8F8;
+    --text:#241C15; --text-2:#6A737C; --text-3:#999D9F;
+    --border:#E8EAED; --border-2:#D5D8DC; --bg:#FFFFFF; --bg-soft:#F6F6F4;
+    --success-bg:#D1E9CE; --success-fg:#007A3D;
+    --warning-bg:#FADCD4; --warning-fg:#C83B27;
+    --info-bg:#D9ECFA; --info-fg:#0F4F8A;
+    --modeled-bg:#EEE6FB; --modeled-fg:#5B3FA9;
+    --delayed-bg:#FFF4D6; --delayed-fg:#7A5A00;
+    --neutral-bg:#EEF0F2; --neutral-fg:#4A5560;
+    --partial-bg:#FFE5D0; --partial-fg:#A24A00;
+  }
+  *{box-sizing:border-box;font-family:"Helvetica Neue","Helvetica","Arial",sans-serif!important}
+  html,body{margin:0;padding:0;background:#fff;color:var(--text);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--teal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  svg{display:block}
+
+  .app{display:flex;min-height:100vh}
+  .sidebar{width:240px;background:#fff;border-right:1px solid var(--border);flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+  .yellow-bar{height:6px;background:var(--mc-yellow)}
+  .logo-wrap{padding:14px 20px 8px}
+  .freddie-circle{width:42px;height:42px;background:var(--peppercorn);border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .freddie-circle svg{width:30px;height:30px}
+  .nav-create{margin:14px 16px 16px;padding:8px 14px;border:1px solid var(--peppercorn);border-radius:4px;background:#fff;color:var(--peppercorn);font-weight:500;display:flex;align-items:center;gap:8px;font-size:13px;width:calc(100% - 32px)}
+  .nav-create:hover{background:var(--bg-soft)}
+  .nav-create svg{width:14px;height:14px}
+  .nav{padding:0 8px;flex:1}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:4px;color:var(--peppercorn);cursor:pointer;font-size:13px;text-decoration:none}
+  .nav-item:hover{background:var(--bg-soft);text-decoration:none}
+  .nav-item.active{background:#fff;color:var(--teal);font-weight:500;box-shadow:inset 3px 0 0 var(--teal);padding-left:9px}
+  .nav-item svg{width:16px;height:16px;color:var(--text-2)}
+  .nav-item.active svg{color:var(--teal)}
+  .nav-sub{margin-left:28px}
+  .nav-sub .nav-item{font-size:12.5px;padding:5px 10px;color:var(--text-2)}
+  .nav-sub .nav-item.active{color:var(--teal);background:transparent;font-weight:600;box-shadow:none;padding-left:10px}
+  .badge-new{background:var(--teal-tint);color:var(--teal);font-size:10px;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:600}
+  .promo-card{margin:0 16px 16px;padding:14px;background:var(--bg-soft);border:1px solid var(--border);border-radius:4px}
+  .promo-card .ts{font-size:10px;color:var(--text-2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .promo-card .pt{font-size:13px;font-weight:600;color:var(--text);line-height:1.35;margin-bottom:6px}
+  .promo-card .pd{font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:10px}
+  .promo-card .pb{display:block;width:100%;padding:8px 12px;background:var(--peppercorn);color:#fff;border:none;border-radius:4px;font-size:12px;font-weight:500;text-align:center}
+
+  .main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .topbar{height:48px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10;gap:24px}
+  .search{flex:1;max-width:560px;height:30px;border:1px solid var(--border);border-radius:4px;padding:0 12px;background:#fff;display:flex;align-items:center;gap:8px;color:var(--text-3)}
+  .search svg{width:14px;height:14px;color:var(--text-3)}
+  .search input{flex:1;border:none;outline:none;background:transparent;font-size:13px;color:var(--text)}
+  .topbar-right{display:flex;align-items:center;gap:18px;font-size:13px}
+  .topbar-icon{width:18px;height:18px;color:var(--text-2);cursor:pointer}
+  .live-help{color:var(--success-fg);font-size:12px;display:inline-flex;align-items:center;gap:6px;font-weight:500;border:1px solid var(--success-bg);background:#F2FAF3;border-radius:999px;padding:3px 10px}
+  .live-help::before{content:"";width:8px;height:8px;background:var(--success-fg);border-radius:50%}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px}
+
+  .page{padding:18px 28px 56px;max-width:1280px;margin:0 auto;width:100%;background:#fff;min-height:100vh}
+  .page-bar{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .page-title{font-size:22px;font-weight:600;margin:0;color:var(--text);letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+  .right-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .btn-ghost{background:#fff;border:1px solid var(--border-2);border-radius:4px;padding:7px 14px;font-size:13px;color:var(--peppercorn);font-weight:500}
+  .btn-primary{background:var(--teal);color:#fff;border:none;border-radius:4px;padding:7px 16px;font-size:13px;font-weight:500}
+
+  .perf-card{background:var(--bg-soft);border:1px solid var(--border);border-radius:6px;padding:24px;margin-bottom:24px}
+  .perf-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+  .perf-title{font-size:18px;font-weight:600;margin:0 0 4px;color:var(--text)}
+  .perf-sub{font-size:12px;color:var(--text-2);margin:0}
+  .date-pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border-2);border-radius:4px;padding:6px 12px;font-size:13px;color:var(--text);cursor:pointer}
+  .date-pill svg{width:14px;height:14px;color:var(--text-2)}
+  .freshness-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2);background:#fff;border:1px solid var(--border);border-radius:999px;padding:3px 10px;cursor:help;font-weight:500;margin-left:10px}
+  .freshness-pill .dot{width:6px;height:6px;border-radius:50%}
+  .freshness-pill.fresh{color:var(--success-fg);border-color:var(--success-bg);background:#F2FAF3}
+  .freshness-pill.fresh .dot{background:var(--success-fg)}
+
+  .perf-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+  .kpi{display:flex;flex-direction:column;gap:6px}
+  .kpi-label{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:6px}
+  .kpi-label svg{width:14px;height:14px;color:var(--text-2)}
+  .kpi-label .lbl{border-bottom:1px dotted var(--text-2);cursor:pointer;font-weight:400}
+  .kpi-label .lbl:hover{color:var(--teal);border-color:var(--teal)}
+  .kpi-value{font-size:28px;font-weight:600;line-height:1.05;letter-spacing:-.5px;color:var(--text);display:flex;align-items:baseline;gap:8px}
+  .kpi-value .unit{font-size:18px;font-weight:600}
+  .kpi-delta{font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:3px;margin-left:6px}
+  .kpi-delta.down{background:var(--warning-bg);color:var(--warning-fg)}
+  .kpi-delta.up{background:var(--success-bg);color:var(--success-fg)}
+  .kpi-delta svg{width:8px;height:8px}
+  .kpi-meta{font-size:11px;color:var(--text-2);margin-top:4px}
+  .kpi-badge-row{margin-top:6px}
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:3px;letter-spacing:.2px;line-height:1.6;cursor:pointer;border:1px solid transparent}
+  .badge:hover{filter:brightness(0.96)}
+  .badge.official{background:var(--success-bg);color:var(--success-fg)}
+  .badge.modeled{background:var(--modeled-bg);color:var(--modeled-fg)}
+  .badge.partial{background:var(--partial-bg);color:var(--partial-fg)}
+
+  /* All popup forms */
+  .all-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .all-title h2{font-size:18px;font-weight:600;margin:0 0 4px;color:var(--text)}
+  .all-title p{font-size:12px;color:var(--text-2);margin:0}
+  .all-controls{display:flex;align-items:center;gap:18px;font-size:13px}
+  .all-controls .filt{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+  .all-controls .lbl{color:var(--text-2)}
+  .all-controls .v{color:var(--text);font-weight:500}
+  .all-controls svg{width:10px;height:10px;color:var(--text-2)}
+
+  /* Form rows */
+  .form-row{display:grid;grid-template-columns:1.6fr 1fr 200px;gap:24px;align-items:flex-start;padding:18px 0;border-bottom:1px solid var(--border)}
+  .f-name-cell{}
+  .f-status-line{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2);margin-bottom:6px}
+  .status-pill{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px;letter-spacing:.2px}
+  .status-pill.draft{background:var(--neutral-bg);color:var(--neutral-fg)}
+  .status-pill.published{background:var(--success-bg);color:var(--success-fg)}
+  .status-pill.notpub{background:var(--delayed-bg);color:var(--delayed-fg)}
+  .f-name{display:block;color:var(--teal);font-weight:500;font-size:14px;text-decoration:underline}
+  .f-name:hover{color:var(--teal-dark)}
+  .f-aud{font-size:12px;color:var(--text-2);margin-bottom:2px}
+  .f-aud-name{font-size:14px;color:var(--text);font-weight:500}
+  .f-actions{display:flex;justify-content:flex-end}
+  .view-form{display:inline-flex;align-items:center;gap:0;border:1px solid var(--border-2);border-radius:4px;background:#fff;overflow:hidden}
+  .view-form .lbl{padding:6px 12px;font-size:12px;color:var(--text);font-weight:500}
+  .view-form .chev{padding:6px 8px;border-left:1px solid var(--border-2);display:flex;align-items:center}
+  .view-form .chev svg{width:10px;height:10px;color:var(--text-2)}
+  .view-form:hover{background:var(--bg-soft)}
+
+  .hover-tip{position:absolute;z-index:100;width:280px;background:var(--peppercorn);color:#fff;padding:10px 12px;border-radius:4px;font-size:12px;line-height:1.55;box-shadow:0 4px 14px rgba(36,28,21,.18);pointer-events:none;opacity:0;transform:translateY(-4px);transition:opacity .12s,transform .12s}
+  .hover-tip.show{opacity:1;transform:translateY(0);pointer-events:auto}
+  .hover-tip::after{content:"";position:absolute;bottom:-5px;left:18px;width:10px;height:10px;background:var(--peppercorn);transform:rotate(45deg)}
+  .hover-tip .tip-cta{margin-top:8px;color:var(--mc-yellow);font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px;cursor:pointer;pointer-events:auto}
+  .hover-tip .tip-cta svg{width:9px;height:9px}
+
+  .recipe-overlay{position:fixed;inset:0;background:rgba(36,28,21,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:32px}
+  .recipe-overlay.show{display:flex}
+  .recipe{background:#fff;width:560px;max-width:100%;max-height:88vh;border-radius:6px;box-shadow:0 12px 32px rgba(36,28,21,.22);overflow:hidden;display:flex;flex-direction:column}
+  .recipe-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .recipe-title-wrap{display:flex;align-items:center;gap:10px}
+  .recipe-title{font-size:18px;font-weight:600;margin:0;color:var(--text)}
+  .icon-btn{background:none;border:none;width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text-2)}
+  .icon-btn:hover{background:var(--bg-soft);color:var(--text)}
+  .icon-btn svg{width:14px;height:14px}
+  .recipe-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 22px;overflow-x:auto}
+  .recipe-tab{padding:12px 14px;font-size:13px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;font-weight:500;white-space:nowrap;margin-bottom:-1px}
+  .recipe-tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:600}
+  .recipe-body{padding:20px 22px;overflow-y:auto;flex:1}
+  .lbl{font-size:11px;color:var(--text-2);letter-spacing:.5px;font-weight:600;text-transform:uppercase;margin-bottom:10px;display:block}
+  .meaning-block{font-size:14px;line-height:1.65}
+  .meaning-block p{margin:0 0 14px}
+  .meaning-block .ctx{background:var(--bg-soft);border-left:3px solid var(--teal);padding:12px 14px;border-radius:0 4px 4px 0;font-size:13px;line-height:1.6}
+  .formula-pill{display:inline-block;background:var(--bg-soft);border:1px solid var(--border);border-radius:4px;padding:10px 14px;font-family:"SF Mono",Monaco,Consolas,monospace!important;font-size:13px;color:var(--teal);margin-bottom:18px;font-weight:500}
+  .lineage-step{display:flex;align-items:flex-start;gap:12px;padding:6px 0}
+  .lineage-num{width:22px;height:22px;border-radius:50%;background:var(--teal-tint);color:var(--teal);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .lineage-text .step-label{font-size:13px;font-weight:500}
+  .lineage-text .step-sub{font-size:12px;color:var(--text-2);margin-top:2px}
+  .lineage-line{margin-left:11px;height:8px;border-left:2px dotted var(--border)}
+  .source-row{background:var(--bg-soft);border:1px solid var(--border);border-radius:4px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;font-size:13px}
+  .source-row .src-icon{width:22px;height:22px;border-radius:3px;background:#fff;border:1px solid var(--border-2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .settings-pill{display:inline-flex;font-size:11px;color:var(--text);background:#fff;border:1px solid var(--border-2);border-radius:999px;padding:3px 10px;margin-right:5px;margin-bottom:5px;font-weight:500}
+  .trust-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .trust-row:last-child{border:none}
+  .trust-row .lhs{color:var(--text-2)}
+  .trust-row .rhs{display:flex;align-items:center;gap:6px;font-weight:500}
+  .trust-row .rhs .stat{width:7px;height:7px;border-radius:50%}
+  .trust-row .rhs.green{color:var(--success-fg)}
+  .trust-row .rhs.green .stat{background:var(--success-fg)}
+  .trust-row .rhs.amber{color:var(--delayed-fg)}
+  .trust-row .rhs.amber .stat{background:var(--delayed-fg)}
+  .ai-prompt{background:#fff;border:1px solid var(--border);border-radius:4px;padding:11px 14px;margin-bottom:6px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:10px}
+  .ai-prompt:hover{background:var(--teal-tint-2);border-color:var(--teal)}
+  .ai-prompt svg{width:12px;height:12px;color:var(--teal)}
+  .ai-foot{margin-top:14px;font-size:11px;color:var(--text-2)}
+  .recipe-actions{padding:14px 22px;border-top:1px solid var(--border);background:var(--bg-soft);display:flex;gap:8px;flex-wrap:wrap}
+  .recipe-actions .act{font-size:12px;color:var(--teal);background:#fff;border:1px solid var(--border-2);border-radius:4px;padding:6px 12px;cursor:pointer;font-weight:500}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-arrow-right" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M3 8h10M9 4l4 4-4 4"/></symbol>
+<symbol id="i-tri-up" viewBox="0 0 8 8"><path fill="currentColor" d="M4 1l3 6H1z"/></symbol>
+<symbol id="i-tri-down" viewBox="0 0 8 8"><path fill="currentColor" d="M4 7L1 1h6z"/></symbol>
+<symbol id="i-chevron-d" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M4 6l4 4 4-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 6h12M5 1v3M11 1v3"/></symbol>
+<symbol id="i-x" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M3 3l10 10M13 3L3 13"/></symbol>
+<symbol id="i-edit" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M11.5 2.5l2 2L6 12l-3 1 1-3z"/></symbol>
+<symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M10.5 10.5L14 14"/></symbol>
+<symbol id="i-people" viewBox="0 0 16 16"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 14c0-2.5 2-4 4-4s4 1.5 4 4"/><circle cx="11" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M9 13c0-1.7 1.3-3 3-3s3 1.3 3 3"/></symbol>
+<symbol id="i-globe" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 8h12M8 2c2 2.5 2 9 0 12M8 2c-2 2.5-2 9 0 12"/></symbol>
+<symbol id="i-mail" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 5l6 4 6-4"/></symbol>
+<symbol id="i-phone" viewBox="0 0 16 16"><rect x="4" y="1" width="8" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M7 13h2"/></symbol>
+<symbol id="n-home" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 7l6-5 6 5v7H2zM6 14V9h4v5"/></symbol>
+<symbol id="n-camp" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 5l6 4 6-4"/></symbol>
+<symbol id="n-auto" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M9 2L4 9h4l-1 5 5-7H8z"/></symbol>
+<symbol id="n-sms" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M3 4h10v7H6l-3 3z"/></symbol>
+<symbol id="n-form" viewBox="0 0 16 16"><rect x="3" y="2" width="10" height="12" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M5 5h6M5 8h6M5 11h4"/></symbol>
+<symbol id="n-aud" viewBox="0 0 16 16"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 14c0-2.5 2-4 4-4s4 1.5 4 4"/><circle cx="11" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M9 13c0-1.7 1.3-3 3-3s3 1.3 3 3"/></symbol>
+<symbol id="n-anal" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 14V6M6 14V2M10 14V8M14 14v-5"/></symbol>
+<symbol id="n-web" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 8h12M8 2c2 2.5 2 9 0 12M8 2c-2 2.5-2 9 0 12"/></symbol>
+<symbol id="n-cont" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 6h12M6 2v12"/></symbol>
+<symbol id="n-int" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="2" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="9" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+<aside class="sidebar">
+  <div class="yellow-bar"></div>
+  <div class="logo-wrap">
+    <div class="freddie-circle">
+      <svg viewBox="0 0 24 24"><path fill="#FFE01B" d="M11.267 0C6.791-.015-1.82 10.246 1.397 12.964l.79.669a3.88 3.88 0 0 0-.22 1.792c.084.84.518 1.644 1.22 2.266.666.59 1.542.964 2.392.964 1.406 3.24 4.62 5.228 8.386 5.34 4.04.12 7.433-1.776 8.854-5.182.093-.24.488-1.316.488-2.267 0-.956-.54-1.352-.885-1.352-.01-.037-.078-.286-.172-.586-.093-.3-.19-.51-.19-.51.375-.563.382-1.065.332-1.35-.053-.353-.2-.653-.496-.964-.296-.311-.902-.63-1.753-.868l-.446-.124c-.002-.019-.024-1.053-.043-1.497-.014-.32-.042-.822-.197-1.315-.186-.668-.508-1.253-.911-1.627 1.112-1.152 1.806-2.422 1.804-3.511-.003-2.095-2.576-2.729-5.746-1.416l-.672.285A678.22 678.22 0 0 0 12.7.504C12.304.159 11.817.002 11.267 0z"/></svg>
+    </div>
+  </div>
+  <button class="nav-create"><svg><use href="#i-edit"/></svg>Create</button>
+  <nav class="nav">
+    <a class="nav-item" href="index.html"><svg><use href="#n-home"/></svg>Home</a>
+    <a class="nav-item" href="campaigns.html"><svg><use href="#n-camp"/></svg>Campaigns</a>
+    <a class="nav-item" href="automations.html"><svg><use href="#n-auto"/></svg>Automations</a>
+    <a class="nav-item" href="sms.html"><svg><use href="#n-sms"/></svg>SMS</a>
+    <a class="nav-item active" href="forms.html"><svg><use href="#n-form"/></svg>Forms<span class="badge-new">New</span></a>
+    <div class="nav-sub"><div class="nav-item active">Other forms</div></div>
+    <a class="nav-item" href="audience-analytics.html"><svg><use href="#n-aud"/></svg>Audience</a>
+    <a class="nav-item" href="analytics.html"><svg><use href="#n-anal"/></svg>Analytics</a>
+    <div class="nav-item"><svg><use href="#n-web"/></svg>Website</div>
+    <div class="nav-item"><svg><use href="#n-cont"/></svg>Content</div>
+    <div class="nav-item"><svg><use href="#n-int"/></svg>Integrations</div>
+  </nav>
+  <div class="promo-card">
+    <div class="ts">Time sensitive</div>
+    <div class="pt">Meet your Mailchimp Customer Success Manager</div>
+    <div class="pd">Start seeing results today by scheduling a call with a Customer Success Manager</div>
+    <button class="pb">Connect to expert</button>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div></div>
+    <div class="search"><svg><use href="#i-search"/></svg><input placeholder="Search…"/></div>
+    <div class="topbar-right">
+      <svg class="topbar-icon"><use href="#i-people"/></svg>
+      <span class="live-help">Live expert help</span>
+      <div class="avatar">D</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-bar">
+      <h1 class="page-title">Popup Forms <span class="badge-new">New</span></h1>
+      <div class="right-actions">
+        <button class="btn-ghost">Settings</button>
+        <button class="btn-primary">Create popup form</button>
+      </div>
+    </div>
+
+    <div class="perf-card">
+      <div class="perf-head">
+        <div>
+          <h2 class="perf-title">Overall popup performance</h2>
+          <p class="perf-sub">April 2, 2026 — May 2, 2026 · Compared to previous 30 days</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="freshness-pill fresh"><span class="dot"></span>Forms · updated 6m ago</span>
+          <span class="date-pill">Previous 30 days <svg><use href="#i-cal"/></svg></span>
+        </div>
+      </div>
+
+      <div class="perf-kpi">
+        <div class="kpi">
+          <div class="kpi-label"><svg><use href="#i-globe"/></svg><span class="lbl" data-tip="visitors">Site visitors</span></div>
+          <div class="kpi-value">4,557 <span class="kpi-delta down"><svg><use href="#i-tri-down"/></svg>-8%</span></div>
+          <div class="kpi-badge-row"><span class="badge official" data-recipe="visitors">Official</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><svg><use href="#i-globe"/></svg><span class="lbl" data-tip="impressions">Unique impressions</span></div>
+          <div class="kpi-value">1,622 <span class="kpi-delta down"><svg><use href="#i-tri-down"/></svg>-1%</span></div>
+          <div class="kpi-badge-row"><span class="badge official" data-recipe="impressions">Official</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><svg><use href="#i-mail"/></svg><span class="lbl" data-tip="emailoptin">Email opt-in rate</span></div>
+          <div class="kpi-value">3.88<span class="unit">%</span> <span class="kpi-delta down"><svg><use href="#i-tri-down"/></svg>-20%</span></div>
+          <div class="kpi-meta">63 emails captured</div>
+          <div class="kpi-badge-row"><span class="badge official" data-recipe="emailoptin">Official</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><svg><use href="#i-phone"/></svg><span class="lbl" data-tip="smsoptin">SMS opt-in rate</span></div>
+          <div class="kpi-value">--<span class="unit">%</span> <span class="kpi-delta" style="background:var(--neutral-bg);color:var(--neutral-fg)">--</span></div>
+          <div class="kpi-meta">-- SMS captures</div>
+          <div class="kpi-badge-row"><span class="badge partial" data-recipe="smsoptin">Partial</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="all-head">
+      <div class="all-title">
+        <h2>All popup forms</h2>
+        <p>Metrics from last 30 days</p>
+      </div>
+      <div class="all-controls">
+        <span class="filt"><span class="lbl">Status:</span> <span class="v">All</span> <svg><use href="#i-chevron-d"/></svg></span>
+        <span class="filt"><span class="lbl">Sort:</span> <span class="v">Most Recent</span> <svg><use href="#i-chevron-d"/></svg></span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="f-name-cell">
+        <div class="f-status-line"><span class="status-pill draft">Draft</span> Edited Feb 18</div>
+        <a class="f-name">Sitewide Email & SMS Capture | Discount</a>
+      </div>
+      <div><div class="f-aud">Audience</div><div class="f-aud-name">Goodnight Fox</div></div>
+      <div class="f-actions"><span class="view-form"><span class="lbl">Edit</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></div>
+    </div>
+
+    <div class="form-row">
+      <div class="f-name-cell">
+        <div class="f-status-line"><span class="status-pill draft">Draft</span> Edited Feb 16</div>
+        <a class="f-name">Email Capture - Free Toddler Starter Pack</a>
+      </div>
+      <div><div class="f-aud">Audience</div><div class="f-aud-name">Goodnight Fox</div></div>
+      <div class="f-actions"><span class="view-form"><span class="lbl">Edit</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></div>
+    </div>
+
+    <div class="form-row">
+      <div class="f-name-cell">
+        <div class="f-status-line"><span class="status-pill published">Published</span> since Jun 16 2025</div>
+        <a class="f-name">NEW - Sitewide Email Capture | 15% Off</a>
+      </div>
+      <div><div class="f-aud">Audience</div><div class="f-aud-name">Goodnight Fox</div></div>
+      <div class="f-actions"><span class="view-form"><span class="lbl">View form</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></div>
+    </div>
+
+    <div class="form-row">
+      <div class="f-name-cell">
+        <div class="f-status-line"><span class="status-pill published">Published</span> since Jun 16 2025</div>
+        <a class="f-name">NEW - Email Capture - Toddler Activity Kit</a>
+      </div>
+      <div><div class="f-aud">Audience</div><div class="f-aud-name">Goodnight Fox</div></div>
+      <div class="f-actions"><span class="view-form"><span class="lbl">View form</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></div>
+    </div>
+
+    <div class="form-row">
+      <div class="f-name-cell">
+        <div class="f-status-line"><span class="status-pill published">Published</span> since Jun 16 2025</div>
+        <a class="f-name">NEW - Letter of the Week Signup</a>
+      </div>
+      <div><div class="f-aud">Audience</div><div class="f-aud-name">Goodnight Fox</div></div>
+      <div class="f-actions"><span class="view-form"><span class="lbl">View form</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></div>
+    </div>
+
+    <div class="form-row">
+      <div class="f-name-cell">
+        <div class="f-status-line"><span class="status-pill notpub">Not published</span> since Jun 16 2025</div>
+        <a class="f-name">Email Capture - Toddler Activity Kit</a>
+      </div>
+      <div><div class="f-aud">Audience</div><div class="f-aud-name">Goodnight Fox</div></div>
+      <div class="f-actions"><span class="view-form"><span class="lbl">View form</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></div>
+    </div>
+
+    <div class="form-row">
+      <div class="f-name-cell">
+        <div class="f-status-line"><span class="status-pill notpub">Not published</span> since Jun 16 2025</div>
+        <a class="f-name">Sitewide Email Capture | 15% Off</a>
+      </div>
+      <div><div class="f-aud">Audience</div><div class="f-aud-name">Goodnight Fox</div></div>
+      <div class="f-actions"><span class="view-form"><span class="lbl">View form</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></div>
+    </div>
+
+    <div class="form-row">
+      <div class="f-name-cell">
+        <div class="f-status-line"><span class="status-pill notpub">Not published</span> since Jun 16 2025</div>
+        <a class="f-name">Letter of the Week Signup</a>
+      </div>
+      <div><div class="f-aud">Audience</div><div class="f-aud-name">Goodnight Fox</div></div>
+      <div class="f-actions"><span class="view-form"><span class="lbl">View form</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="hover-tip" id="hover-tip">
+  <div id="tip-def"></div>
+  <div class="tip-cta" id="tip-cta">Click for full breakdown <svg><use href="#i-arrow-right"/></svg></div>
+</div>
+
+<div class="recipe-overlay" id="recipe-overlay">
+  <div class="recipe">
+    <div class="recipe-head">
+      <div class="recipe-title-wrap"><h2 class="recipe-title" id="r-title"></h2><span class="badge" id="r-badge"></span></div>
+      <button class="icon-btn" onclick="closeRecipe()"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="recipe-tabs" id="r-tabs">
+      <span class="recipe-tab active" data-tab="meaning">Meaning</span>
+      <span class="recipe-tab" data-tab="formula">Formula</span>
+      <span class="recipe-tab" data-tab="sources">Sources</span>
+      <span class="recipe-tab" data-tab="trust">Trust</span>
+      <span class="recipe-tab" data-tab="ai">Ask AI</span>
+    </div>
+    <div class="recipe-body" id="r-body"></div>
+    <div class="recipe-actions">
+      <span class="act" onclick="switchTab('ai')">Ask Analytics AI</span>
+      <span class="act">View methodology</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const METRICS = {
+  visitors:{title:"Site visitors",badge:{label:"Official",cls:"official"},
+    short:"Number of unique visitors to the pages where your popup forms can appear.",
+    long:"Counts unique browser sessions on your site. Bot traffic and crawlers are filtered. The same person visiting from a phone and laptop counts as 2.",
+    formula:"Count(distinct session_id WHERE on_form_eligible_page)",
+    lineage:[{label:"Visitor lands on page",sub:""},{label:"Mailchimp tracking pixel fires",sub:""},{label:"Bot filter applied",sub:""},{label:"Counted as site visitor",sub:""}],
+    sources:[{sys:"Mailchimp site tracker",icon:"M"},{sys:"Bot filter v3.2",icon:"B"}],
+    settings:["Bot filter: On","Tracking: Mailchimp.js"],
+    trust:[{label:"Last updated",val:"6 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    compare:null,
+    ai:["Why are visitors down 8%?","Where is traffic coming from?","Compare visitors over time"]},
+  impressions:{title:"Unique impressions",badge:{label:"Official",cls:"official"},
+    short:"Number of unique visitors who saw a popup form.",
+    long:"Counts visitors who triggered display of any popup form. A popup that fires on exit-intent counts when shown, not when triggered. Same visitor seeing 3 different popups counts as 1 unique impression.",
+    formula:"Count(distinct session_id WHERE saw_popup)",
+    lineage:[{label:"Visitor on site",sub:""},{label:"Trigger condition met",sub:"Time, scroll, exit intent"},{label:"Popup rendered",sub:""},{label:"Impression counted",sub:""}],
+    sources:[{sys:"Mailchimp site tracker",icon:"M"}],
+    settings:["Bot filter: On","Frequency cap: Per visitor session"],
+    trust:[{label:"Last updated",val:"6 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    compare:null,
+    confusion:"This counts unique visitors who saw a popup, not total popup views. A visitor who saw 3 different popups counts as 1 impression.",
+    ai:["What's a healthy impression rate?","Why is impression rate so low?","Show impressions by popup"]},
+  emailoptin:{title:"Email opt-in rate",badge:{label:"Official",cls:"official"},
+    short:"Percentage of unique impressions that resulted in an email submission.",
+    long:"Measures conversion of popup-shown sessions to email captures. Bot signups are filtered. Double opt-in confirmations are not required for the conversion to count here.",
+    formula:"Email Captures / Unique Impressions",
+    lineage:[{label:"Visitor sees popup",sub:""},{label:"Visitor submits email",sub:""},{label:"Bot filter applied",sub:""},{label:"Email recorded",sub:"63 captures this period"},{label:"Rate computed",sub:"63 / 1,622 = 3.88%"}],
+    sources:[{sys:"Mailchimp form submissions",icon:"M"},{sys:"Bot filter (signup protection)",icon:"B"}],
+    settings:["Signup protection: On","Double opt-in: Per form"],
+    trust:[{label:"Last updated",val:"6 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    compare:null,
+    ai:["Why is email opt-in down 20%?","What's a healthy opt-in rate?","Which popup converts best?","How to improve opt-in?"]},
+  smsoptin:{title:"SMS opt-in rate",badge:{label:"Partial",cls:"partial"},
+    short:"Percentage of unique impressions resulting in an SMS opt-in.",
+    long:"Marked partial because the SMS opt-in flow requires explicit TCPA consent (separate checkbox) which not all popup forms collect. Forms without SMS consent fields can't contribute to this metric.",
+    formula:"SMS Captures / Unique Impressions (only on SMS-enabled forms)",
+    lineage:[{label:"Visitor sees popup with SMS field",sub:""},{label:"Visitor submits phone with consent",sub:""},{label:"TCPA consent recorded",sub:""},{label:"SMS opt-in counted",sub:"-- captures"}],
+    sources:[{sys:"Mailchimp form submissions",icon:"M"},{sys:"SMS consent registry",icon:"C"}],
+    settings:["TCPA consent: Required for US"],
+    trust:[{label:"Last updated",val:"6 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"Most forms don't have SMS field enabled",status:"amber"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    compare:null,
+    confusion:"This metric is 'Partial' because most of your popup forms don't include an SMS opt-in field. To improve coverage, add SMS to more forms.",
+    ai:["Why is SMS opt-in --?","Which forms have SMS opt-in enabled?","How do I add SMS to my popups?"]},
+};
+
+const tip=document.getElementById("hover-tip"),tipDef=document.getElementById("tip-def"),tipCta=document.getElementById("tip-cta");
+let tipKey=null,tipHideTimer=null;
+document.querySelectorAll("[data-tip]").forEach(el=>{
+  el.addEventListener("mouseenter",()=>{const k=el.getAttribute("data-tip"),m=METRICS[k];if(!m)return;clearTimeout(tipHideTimer);tipKey=k;tipDef.textContent=m.short;const r=el.getBoundingClientRect();tip.style.left=(r.left+window.scrollX)+"px";tip.style.top=(r.top+window.scrollY-4)+"px";tip.classList.add("show");requestAnimationFrame(()=>{tip.style.top=(r.top+window.scrollY-tip.offsetHeight-8)+"px"});});
+  el.addEventListener("mouseleave",()=>{tipHideTimer=setTimeout(()=>{if(!tip.matches(":hover"))tip.classList.remove("show")},140);});
+  el.addEventListener("click",()=>{const k=el.getAttribute("data-tip");openRecipe(k);});
+});
+tip.addEventListener("mouseleave",()=>tip.classList.remove("show"));
+tipCta.addEventListener("click",()=>{if(tipKey)openRecipe(tipKey);});
+document.querySelectorAll("[data-recipe]").forEach(el=>{el.addEventListener("click",e=>{e.stopPropagation();openRecipe(el.getAttribute("data-recipe"));});});
+
+let currentMetric=null;
+const overlay=document.getElementById("recipe-overlay");
+function openRecipe(key,tab="meaning"){const m=METRICS[key];if(!m)return;currentMetric=key;document.getElementById("r-title").textContent=m.title;const badge=document.getElementById("r-badge");badge.className="badge "+m.badge.cls;badge.textContent=m.badge.label;switchTab(tab);overlay.classList.add("show");tip.classList.remove("show");}
+function closeRecipe(){overlay.classList.remove("show");}
+overlay.addEventListener("click",e=>{if(e.target===overlay)closeRecipe();});
+document.querySelectorAll("#r-tabs .recipe-tab").forEach(t=>t.addEventListener("click",()=>switchTab(t.dataset.tab)));
+function switchTab(tab){document.querySelectorAll("#r-tabs .recipe-tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===tab));const m=METRICS[currentMetric];document.getElementById("r-body").innerHTML=renderTab(tab,m);}
+function renderTab(tab,m){
+  if(tab==="meaning"){let h=`<div class="meaning-block"><p>${m.short}</p><div class="ctx">${m.long}</div>`;if(m.confusion)h+=`<div style="margin-top:14px;padding:12px 14px;background:#FFF7F2;border:1px solid #F0D5C5;border-radius:4px;font-size:13px;line-height:1.6"><strong style="color:var(--warning-fg);display:block;margin-bottom:4px;font-size:12px">Common confusion</strong>${m.confusion}</div>`;return h+`</div>`;}
+  if(tab==="formula"){let h=`<div class="formula-pill">${m.formula}</div><span class="lbl">Step by step (lineage)</span>`;m.lineage.forEach((s,i)=>{h+=`<div class="lineage-step"><div class="lineage-num">${i+1}</div><div class="lineage-text"><div class="step-label">${s.label}</div><div class="step-sub">${s.sub}</div></div></div>`;if(i<m.lineage.length-1)h+=`<div class="lineage-line"></div>`;});return h;}
+  if(tab==="sources"){let h=`<span class="lbl">Data sources</span>`;m.sources.forEach(s=>h+=`<div class="source-row"><div class="src-icon">${s.icon}</div><span>${s.sys}</span></div>`);h+=`<span class="lbl" style="margin-top:14px">Current settings</span><div>`;m.settings.forEach(s=>h+=`<span class="settings-pill">${s}</span>`);return h+`</div>`;}
+  if(tab==="trust"){let h=`<span class="lbl">Data status</span>`;m.trust.forEach(r=>h+=`<div class="trust-row"><span class="lhs">${r.label}</span><span class="rhs ${r.status}"><span class="stat"></span>${r.val}</span></div>`);return h;}
+  if(tab==="ai"){let h=`<span class="lbl">Suggested questions about ${m.title}</span>`;m.ai.forEach(q=>h+=`<div class="ai-prompt"><svg><use href="#i-arrow-right"/></svg>${q}</div>`);return h+`<div class="ai-foot">Powered by Analytics AI.</div>`;}
+  return "";
+}
+</script>
+</body>
+</html>
