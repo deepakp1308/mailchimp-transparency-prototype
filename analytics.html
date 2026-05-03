@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marketing dashboard · Mailchimp</title>
+<style>
+  /* ============================================================
+     Mailchimp Marketing Dashboard — Metric Transparency
+     Strict Mailchimp brand. No emoji. No vibe-code colors.
+     Tokens from Mailchimp brand book + product UI screenshots.
+     ============================================================ */
+
+  :root{
+    /* ---- Mailchimp official brand ---- */
+    --mc-yellow:#FFE01B;       /* Cavendish Yellow */
+    --mc-yellow-dark:#E5C615;
+    --peppercorn:#241C15;      /* Mailchimp dark text */
+    --teal:#007C89;            /* Mailchimp Blue/teal */
+    --teal-dark:#005f69;
+    --teal-tint:#E6F2F3;
+    --teal-tint-2:#F2F8F8;
+
+    /* ---- Mailchimp neutral scale (from product UI) ---- */
+    --text:#241C15;
+    --text-2:#6A737C;
+    --text-3:#999D9F;
+    --border:#E8EAED;
+    --border-2:#D5D8DC;
+    --bg:#FFFFFF;
+    --bg-soft:#F6F6F4;
+
+    /* ---- Status (from Mailchimp soft-pill conventions) ---- */
+    --success-bg:#D1E9CE;
+    --success-fg:#007A3D;
+    --warning-bg:#FADCD4;
+    --warning-fg:#C83B27;
+    --info-bg:#D9ECFA;
+    --info-fg:#0F4F8A;
+
+    /* These three are kept for trust-badge taxonomy.
+       Tones tuned to fit Mailchimp's existing pill palette. */
+    --modeled-bg:#EEE6FB;
+    --modeled-fg:#5B3FA9;
+    --delayed-bg:#FFF4D6;
+    --delayed-fg:#7A5A00;
+    --partial-bg:#FFE5D0;
+    --partial-fg:#A24A00;
+
+    /* ---- Chart palette (from Mailchimp product reports) ---- */
+    --chart-blue:#0070D2;
+    --chart-purple:#A78BFA;
+    --chart-pink:#EC4899;
+    --chart-teal:#00B2A9;
+  }
+
+  /* Force system fonts only — no emoji rendering allowed */
+  *{box-sizing:border-box;font-family:"Helvetica Neue","Helvetica","Arial",sans-serif!important}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--teal);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* Inline SVG icons — single global style */
+  .ico{flex-shrink:0;display:inline-flex}
+  svg{display:block}
+
+  /* ============= Layout ============= */
+  .app{display:flex;min-height:100vh}
+  .sidebar{width:240px;background:#fff;border-right:1px solid var(--border);
+    flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+  .yellow-bar{height:6px;background:var(--mc-yellow)}
+
+  /* Freddie logo block — using the real Mailchimp Freddie mark */
+  .logo-wrap{padding:14px 20px 8px;display:flex;align-items:center;gap:10px}
+  .freddie-circle{width:42px;height:42px;background:var(--peppercorn);border-radius:50%;
+    display:flex;align-items:center;justify-content:center}
+  .freddie-circle svg{width:30px;height:30px}
+
+  .nav-create{margin:14px 16px 16px;padding:8px 14px;border:1px solid var(--peppercorn);
+    border-radius:4px;background:#fff;color:var(--peppercorn);font-weight:500;
+    display:flex;align-items:center;gap:8px;font-size:13px;width:calc(100% - 32px)}
+  .nav-create:hover{background:var(--bg-soft)}
+  .nav-create svg{width:14px;height:14px;color:var(--peppercorn)}
+
+  .nav{padding:0 8px}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:4px;
+    color:var(--peppercorn);cursor:pointer;font-size:13px}
+  .nav-item:hover{background:var(--bg-soft)}
+  .nav-item.active{background:#fff;color:var(--teal);font-weight:500;
+    box-shadow:inset 3px 0 0 var(--teal);padding-left:9px}
+  .nav-item svg{width:16px;height:16px;color:var(--text-2)}
+  .nav-item.active svg{color:var(--teal)}
+  .nav-sub{margin-left:28px}
+  .nav-sub .nav-item{font-size:12.5px;padding:5px 10px;color:var(--text-2)}
+  .nav-sub .nav-item.active{color:var(--teal);background:transparent;font-weight:600;
+    box-shadow:none;padding-left:10px}
+  .badge-new{background:var(--teal-tint);color:var(--teal);font-size:10px;
+    padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:600;letter-spacing:.2px}
+
+  .main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .topbar{height:48px;background:#fff;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+    position:sticky;top:0;z-index:10;gap:24px}
+  .search{flex:1;max-width:560px;height:30px;border:1px solid var(--border);border-radius:4px;
+    padding:0 12px;background:#fff;display:flex;align-items:center;gap:8px;color:var(--text-3)}
+  .search svg{width:14px;height:14px;color:var(--text-3)}
+  .search input{flex:1;border:none;outline:none;background:transparent;font-size:13px;color:var(--text)}
+  .topbar-right{display:flex;align-items:center;gap:18px;font-size:13px}
+  .live-help{color:var(--success-fg);font-size:12px;display:inline-flex;align-items:center;gap:6px;font-weight:500}
+  .live-help::before{content:"";width:8px;height:8px;background:var(--success-fg);border-radius:50%}
+  .help-icon{width:18px;height:18px;color:var(--text-2);cursor:pointer}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px}
+
+  .page{padding:24px 28px 56px;max-width:1280px;margin:0 auto;width:100%}
+  .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .page-title{font-size:28px;font-weight:600;margin:0;letter-spacing:-.2px}
+  .page-actions{display:flex;align-items:center;gap:10px}
+  .btn-ghost{background:#fff;border:1px solid var(--border-2);border-radius:4px;
+    padding:7px 12px;font-size:13px;display:flex;align-items:center;gap:6px;color:var(--peppercorn)}
+  .btn-ghost:hover{background:var(--bg-soft)}
+  .btn-ghost svg{width:14px;height:14px;color:var(--text-2)}
+
+  /* ============= Filter row ============= */
+  .filter-row{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:12px;
+    background:#fff;border:1px solid var(--border);border-radius:4px;padding:14px;
+    margin-bottom:18px;align-items:end}
+  .filter-row label{font-size:12px;color:var(--text-2);display:block;margin-bottom:4px}
+  .filter-row select{width:100%;height:34px;border:1px solid var(--border-2);
+    border-radius:4px;padding:0 30px 0 10px;background:#fff;font-size:13px;color:var(--text);
+    appearance:none;
+    background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%236A737C' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 10px center}
+  .filter-row select:focus{outline:none;border-color:var(--teal)}
+  .bot-pill{display:flex;align-items:center;gap:6px;color:var(--text);font-size:12px;
+    height:34px;padding:0 4px}
+  .bot-pill::before{content:"";width:6px;height:6px;background:var(--teal);border-radius:50%}
+
+  /* ============= Card ============= */
+  .card{background:#fff;border:1px solid var(--border);border-radius:4px;padding:24px;
+    margin-bottom:16px}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;
+    margin-bottom:6px;gap:16px}
+  .card-title{font-size:18px;font-weight:600;margin:0;display:flex;align-items:center;
+    gap:8px;color:var(--text)}
+  .card-title .edit{width:14px;height:14px;color:var(--text-3);cursor:pointer}
+  .card-title .edit:hover{color:var(--teal)}
+  .card-sub{font-size:12px;color:var(--text-2);margin:2px 0 18px}
+  .card-toggle{display:inline-flex;background:var(--bg-soft);border-radius:4px;padding:2px}
+  .card-toggle span{padding:5px 14px;font-size:12px;color:var(--text-2);border-radius:3px;
+    cursor:pointer;font-weight:500}
+  .card-toggle span.active{background:#fff;color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .card-toggle span:hover:not(.active){color:var(--text)}
+
+  /* ============= Section freshness pill ============= */
+  .freshness-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;
+    color:var(--text-2);background:#fff;border:1px solid var(--border);
+    border-radius:999px;padding:3px 10px;cursor:help;font-weight:500}
+  .freshness-pill .dot{width:6px;height:6px;border-radius:50%}
+  .freshness-pill.fresh{color:var(--success-fg);border-color:var(--success-bg);background:#F2FAF3}
+  .freshness-pill.fresh .dot{background:var(--success-fg)}
+  .freshness-pill.delayed{color:var(--delayed-fg);border-color:#F2DFA0;background:var(--delayed-bg)}
+  .freshness-pill.delayed .dot{background:var(--delayed-fg)}
+
+  /* ============= KPI grid ============= */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;padding:8px 0 4px}
+  .kpi{display:flex;flex-direction:column;gap:6px;position:relative}
+  .kpi-label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)}
+  .kpi-label .lbl{border-bottom:1px dotted var(--text-2);cursor:pointer;font-weight:400}
+  .kpi-label .lbl:hover{color:var(--teal);border-color:var(--teal)}
+  .kpi-label svg{width:14px;height:14px;color:var(--text-2)}
+  .kpi-value{font-size:30px;font-weight:600;line-height:1.05;letter-spacing:-.5px;color:var(--text)}
+  .kpi-delta{font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;
+    padding:3px 7px;border-radius:3px;width:fit-content}
+  .kpi-delta.down{background:var(--warning-bg);color:var(--warning-fg)}
+  .kpi-delta.up{background:var(--success-bg);color:var(--success-fg)}
+  .kpi-delta svg{width:8px;height:8px}
+  .kpi-meta{font-size:11px;color:var(--text-2);display:flex;flex-direction:column;gap:3px;margin-top:4px}
+  .kpi-meta .row{display:flex;align-items:center;gap:6px}
+  .kpi-meta .row svg{width:12px;height:12px;color:var(--text-3)}
+
+  /* ============= Trust Badge ============= */
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;
+    padding:2px 8px;border-radius:3px;letter-spacing:.2px;line-height:1.6;cursor:pointer;
+    border:1px solid transparent}
+  .badge:hover{filter:brightness(0.96)}
+  .badge.official{background:var(--success-bg);color:var(--success-fg)}
+  .badge.modeled{background:var(--modeled-bg);color:var(--modeled-fg)}
+  .badge.delayed{background:var(--delayed-bg);color:var(--delayed-fg)}
+  .badge.partial{background:var(--partial-bg);color:var(--partial-fg)}
+  .badge.differs{background:var(--info-bg);color:var(--info-fg)}
+
+  /* ============= Hover tooltip (Layer 1) ============= */
+  .hover-tip{position:absolute;z-index:100;width:280px;background:var(--peppercorn);
+    color:#fff;padding:10px 12px;border-radius:4px;font-size:12px;line-height:1.55;
+    box-shadow:0 4px 14px rgba(36,28,21,.18);pointer-events:none;opacity:0;
+    transform:translateY(-4px);transition:opacity .12s,transform .12s}
+  .hover-tip.show{opacity:1;transform:translateY(0);pointer-events:auto}
+  .hover-tip::after{content:"";position:absolute;bottom:-5px;left:18px;
+    width:10px;height:10px;background:var(--peppercorn);transform:rotate(45deg)}
+  .hover-tip .tip-cta{margin-top:8px;color:var(--mc-yellow);font-size:11px;font-weight:600;
+    display:inline-flex;align-items:center;gap:4px;cursor:pointer;pointer-events:auto}
+  .hover-tip .tip-cta svg{width:9px;height:9px}
+  .hover-tip .tip-cta:hover{filter:brightness(1.1)}
+
+  /* ============= Recipe Card (Layer 2) ============= */
+  .recipe-overlay{position:fixed;inset:0;background:rgba(36,28,21,.45);z-index:200;
+    display:none;align-items:center;justify-content:center;padding:32px}
+  .recipe-overlay.show{display:flex}
+  .recipe{background:#fff;width:560px;max-width:100%;max-height:88vh;border-radius:6px;
+    box-shadow:0 12px 32px rgba(36,28,21,.22);overflow:hidden;display:flex;flex-direction:column}
+  .recipe-head{padding:18px 22px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between}
+  .recipe-title-wrap{display:flex;align-items:center;gap:10px}
+  .recipe-title{font-size:18px;font-weight:600;margin:0;color:var(--text)}
+  .icon-btn{background:none;border:none;width:28px;height:28px;border-radius:4px;
+    display:flex;align-items:center;justify-content:center;color:var(--text-2)}
+  .icon-btn:hover{background:var(--bg-soft);color:var(--text)}
+  .icon-btn svg{width:14px;height:14px}
+  .recipe-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 22px;
+    overflow-x:auto}
+  .recipe-tab{padding:12px 14px;font-size:13px;color:var(--text-2);cursor:pointer;
+    border-bottom:2px solid transparent;font-weight:500;white-space:nowrap;margin-bottom:-1px}
+  .recipe-tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:600}
+  .recipe-tab:hover:not(.active){color:var(--text)}
+  .recipe-body{padding:20px 22px;overflow-y:auto;flex:1}
+
+  .lbl{font-size:11px;color:var(--text-2);letter-spacing:.5px;font-weight:600;
+    text-transform:uppercase;margin-bottom:10px;display:block}
+
+  .meaning-block{font-size:14px;line-height:1.65;color:var(--text)}
+  .meaning-block p{margin:0 0 14px}
+  .meaning-block .ctx{background:var(--bg-soft);border-left:3px solid var(--teal);
+    padding:12px 14px;border-radius:0 4px 4px 0;font-size:13px;color:var(--text);line-height:1.6}
+  .confusion-callout{margin-top:14px;padding:12px 14px;background:#FFF7F2;
+    border:1px solid #F0D5C5;border-radius:4px;font-size:13px;color:var(--text);line-height:1.6}
+  .confusion-callout strong{color:var(--warning-fg);display:block;margin-bottom:4px;font-size:12px}
+
+  .formula-pill{display:inline-block;background:var(--bg-soft);border:1px solid var(--border);
+    border-radius:4px;padding:10px 14px;font-family:"SF Mono",Monaco,Consolas,"Courier New",monospace!important;
+    font-size:13px;color:var(--teal);margin-bottom:18px;font-weight:500}
+  .lineage-step{display:flex;align-items:flex-start;gap:12px;padding:6px 0}
+  .lineage-num{width:22px;height:22px;border-radius:50%;background:var(--teal-tint);
+    color:var(--teal);font-size:11px;font-weight:700;display:flex;align-items:center;
+    justify-content:center;flex-shrink:0;margin-top:1px}
+  .lineage-text{flex:1}
+  .lineage-text .step-label{font-size:13px;font-weight:500;color:var(--text)}
+  .lineage-text .step-sub{font-size:12px;color:var(--text-2);margin-top:2px}
+  .lineage-line{margin-left:11px;height:8px;border-left:2px dotted var(--border)}
+
+  .source-row{background:var(--bg-soft);border:1px solid var(--border);border-radius:4px;
+    padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;font-size:13px}
+  .source-row .src-icon{width:22px;height:22px;border-radius:3px;background:#fff;
+    border:1px solid var(--border-2);display:flex;align-items:center;justify-content:center;
+    font-size:11px;flex-shrink:0;font-weight:700;color:var(--text)}
+  .settings-pill{display:inline-flex;font-size:11px;color:var(--text);
+    background:#fff;border:1px solid var(--border-2);
+    border-radius:999px;padding:3px 10px;margin-right:5px;margin-bottom:5px;font-weight:500}
+
+  .trust-row{display:flex;justify-content:space-between;align-items:center;
+    padding:11px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .trust-row:last-child{border:none}
+  .trust-row .lhs{color:var(--text-2)}
+  .trust-row .rhs{display:flex;align-items:center;gap:6px;font-weight:500}
+  .trust-row .rhs .stat{width:7px;height:7px;border-radius:50%}
+  .trust-row .rhs.green{color:var(--success-fg)}
+  .trust-row .rhs.green .stat{background:var(--success-fg)}
+  .trust-row .rhs.amber{color:var(--delayed-fg)}
+  .trust-row .rhs.amber .stat{background:var(--delayed-fg)}
+  .progress-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:14px}
+  .progress-fill{height:100%;background:var(--teal)}
+  .progress-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-2);margin-top:6px}
+
+  .compare-row{background:var(--bg-soft);border:1px solid var(--border);border-radius:4px;
+    padding:12px 14px;margin-bottom:8px}
+  .compare-row .platform{font-size:13px;font-weight:600;color:var(--text);
+    display:flex;align-items:center;gap:8px}
+  .compare-row .platform .src-icon{width:20px;height:20px;border-radius:3px;background:#fff;
+    border:1px solid var(--border-2);display:flex;align-items:center;justify-content:center;
+    font-size:10px;flex-shrink:0;font-weight:700}
+  .compare-row .why{font-size:12px;color:var(--text-2);margin-top:6px;line-height:1.55}
+  .reconcile-cta{margin-top:8px;padding:12px 16px;background:var(--teal);color:#fff;
+    border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;display:flex;
+    align-items:center;justify-content:space-between;border:none;width:100%}
+  .reconcile-cta:hover{background:var(--teal-dark)}
+  .reconcile-cta svg{width:14px;height:14px}
+
+  .ai-prompt{background:#fff;border:1px solid var(--border);border-radius:4px;
+    padding:11px 14px;margin-bottom:6px;font-size:13px;color:var(--text);cursor:pointer;
+    display:flex;align-items:center;gap:10px;line-height:1.4}
+  .ai-prompt:hover{background:var(--teal-tint-2);border-color:var(--teal)}
+  .ai-prompt svg{width:12px;height:12px;color:var(--teal);flex-shrink:0}
+  .ai-foot{margin-top:14px;font-size:11px;color:var(--text-2)}
+  .ai-foot a{color:var(--teal);font-weight:500}
+
+  .recipe-actions{padding:14px 22px;border-top:1px solid var(--border);background:var(--bg-soft);
+    display:flex;gap:8px;flex-wrap:wrap}
+  .recipe-actions .act{font-size:12px;color:var(--teal);background:#fff;border:1px solid var(--border-2);
+    border-radius:4px;padding:6px 12px;cursor:pointer;font-weight:500}
+  .recipe-actions .act:hover{background:var(--teal-tint);border-color:var(--teal)}
+
+  /* ============= Reconciliation drawer (Layer 3) ============= */
+  .drawer-overlay{position:fixed;inset:0;background:rgba(36,28,21,.45);z-index:300;display:none}
+  .drawer-overlay.show{display:block}
+  .drawer{position:fixed;right:0;top:0;height:100vh;width:560px;max-width:100%;
+    background:#fff;z-index:301;transform:translateX(100%);transition:transform .25s ease;
+    display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(36,28,21,.16)}
+  .drawer.show{transform:translateX(0)}
+  .drawer-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;
+    align-items:center;justify-content:space-between}
+  .drawer-head h2{font-size:18px;font-weight:600;margin:0;color:var(--text)}
+  .drawer-body{padding:22px;overflow-y:auto;flex:1}
+  .compare-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  .compare-card{border:1px solid var(--border);border-radius:4px;padding:14px}
+  .compare-card.mc{background:#FFFCEB;border-color:var(--mc-yellow)}
+  .compare-card.shop{background:#F2FAF3;border-color:#B5D8A3}
+  .compare-card .src-name{font-size:11px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  .compare-card.mc .src-name{color:#7A5A00}
+  .compare-card.shop .src-name{color:#3F7325}
+  .compare-card .v{font-size:24px;font-weight:700;letter-spacing:-.4px;margin-bottom:4px;color:var(--text)}
+  .compare-card .desc{font-size:11px;color:var(--text-2);line-height:1.55}
+  .gap-card{background:#FFF7F2;border:1px solid #F0D5C5;border-radius:4px;padding:14px;
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .gap-card .gap-num{font-size:22px;font-weight:700;color:var(--warning-fg);letter-spacing:-.3px}
+  .gap-card .gap-lbl{font-size:10px;color:var(--warning-fg);font-weight:700;
+    text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+  .gap-card .toggle-reasons{background:#fff;color:var(--warning-fg);border:1px solid #F0D5C5;
+    border-radius:4px;padding:6px 12px;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+  .gap-card .toggle-reasons:hover{background:var(--warning-bg)}
+  .gap-card .toggle-reasons svg{width:10px;height:10px}
+  .reason-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+  .reason-row:last-child{border:none}
+  .reason-num{width:22px;height:22px;border-radius:50%;background:var(--bg-soft);color:var(--text);
+    font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;border:1px solid var(--border-2)}
+  .reason-text{font-size:13px;color:var(--text);line-height:1.6}
+
+  /* ============= Performance over time chart ============= */
+  .chart-wrap{display:grid;grid-template-columns:1fr 240px;gap:32px;margin-top:14px}
+  .chart-area{position:relative;padding-left:34px}
+  .chart-y{position:absolute;left:0;top:0;bottom:24px;display:flex;flex-direction:column;
+    justify-content:space-between;font-size:10px;color:var(--text-2)}
+  .chart{height:240px;border-bottom:1px solid var(--border);position:relative;display:flex;
+    align-items:flex-end;gap:2px;padding-bottom:24px;border-left:1px solid var(--border)}
+  .chart-bar-wrap{flex:1;display:flex;align-items:flex-end;justify-content:center;height:100%;cursor:pointer}
+  .chart-bar{width:5px;background:var(--chart-blue);border-radius:1px 1px 0 0;min-height:2px;transition:all .15s}
+  .chart-bar-wrap:hover .chart-bar{background:var(--teal)}
+  .chart-bar-wrap.selected .chart-bar{background:var(--teal);width:7px;box-shadow:0 0 0 3px var(--teal-tint)}
+  .chart-x{display:flex;justify-content:space-between;font-size:10px;color:var(--text-2);
+    margin-top:6px;padding-left:34px}
+  .chart-side .label{font-size:12px;color:var(--text-2);margin-bottom:4px;display:flex;align-items:center;gap:4px}
+  .chart-side .label .lbl-i{border-bottom:1px dotted var(--text-2);cursor:pointer;font-weight:400;
+    text-transform:none;letter-spacing:0;font-size:12px;color:var(--text-2);margin-bottom:0;display:inline}
+  .chart-side .label .lbl-i:hover{color:var(--teal);border-color:var(--teal)}
+  .chart-side .val{font-size:18px;font-weight:600;margin-bottom:14px;color:var(--text)}
+  .chart-legend{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2)}
+  .chart-legend .swatch{width:10px;height:10px;background:var(--chart-blue);border-radius:50%}
+
+  .pager{display:flex;justify-content:space-between;align-items:center;margin-top:14px;
+    font-size:12px;color:var(--text-2);padding-left:34px}
+  .pager .arrows{display:flex;gap:14px;align-items:center}
+  .pager .arrow-btn{cursor:pointer;color:var(--text-2);display:inline-flex;align-items:center;gap:4px}
+  .pager .arrow-btn:hover{color:var(--teal)}
+  .pager .arrow-btn svg{width:10px;height:10px}
+
+  /* Chart mark explainer */
+  .mark-explainer{margin-top:18px;background:var(--bg-soft);border:1px solid var(--border);
+    border-radius:4px;padding:14px 16px}
+  .mark-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .mark-head .date{color:var(--teal);font-weight:600;font-size:13px}
+  .mark-head .val{font-size:16px;font-weight:600;color:var(--text)}
+  .mark-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px}
+  .mark-grid .k{font-size:11px;color:var(--text-2)}
+  .mark-grid .v{font-size:13px;color:var(--text);font-weight:500}
+  .mark-why{font-size:13px;color:var(--text);background:#F2FAF3;border:1px solid var(--success-bg);
+    padding:10px 12px;border-radius:4px;line-height:1.55}
+  .mark-why strong{color:var(--success-fg)}
+
+  /* ============= Funnel ============= */
+  .funnel-tabs{display:flex;gap:18px;margin:6px 0 18px;border-bottom:1px solid var(--border)}
+  .funnel-tabs .ft{padding:10px 0;font-size:13px;color:var(--text-2);cursor:pointer;
+    border-bottom:2px solid transparent;font-weight:500;margin-bottom:-1px}
+  .funnel-tabs .ft.active{color:var(--text);border-bottom-color:var(--peppercorn);font-weight:600}
+  .rev-per{font-size:12px;color:var(--text-2);margin-bottom:4px}
+  .rev-val{font-size:24px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;
+    gap:10px;color:var(--text);letter-spacing:-.3px}
+  .funnel{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;height:120px;
+    align-items:flex-end;margin:8px 0}
+  .funnel-bar{position:relative;height:100%;background:var(--border);border-radius:2px;overflow:hidden}
+  .funnel-fill{position:absolute;bottom:0;left:0;right:0;background:var(--chart-purple);border-radius:2px}
+  .funnel-fill.empty{background:transparent;border:1px dashed var(--border-2);height:1%}
+  .funnel-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:14px}
+  .funnel-step{display:flex;flex-direction:column;gap:4px}
+  .funnel-step .step-label{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2)}
+  .funnel-step .step-label .lbl-i{border-bottom:1px dotted var(--text-2);cursor:pointer;font-weight:400;
+    text-transform:none;letter-spacing:0;font-size:11px;color:var(--text-2);margin-bottom:0;display:inline}
+  .funnel-step .step-label .lbl-i:hover{color:var(--teal);border-color:var(--teal)}
+  .funnel-step .step-val{font-size:18px;font-weight:600;color:var(--text)}
+  .funnel-step .drop{font-size:11px;color:var(--text-2);display:inline-flex;align-items:center;gap:3px}
+  .funnel-step .drop svg{width:8px;height:8px;color:var(--warning-fg)}
+
+  /* ============= AI prompt bar (per-metric) ============= */
+  .ai-bar{margin-top:16px;background:var(--teal-tint-2);border:1px solid var(--teal-tint);
+    border-radius:4px;padding:12px 16px;display:flex;align-items:center;gap:10px;
+    font-size:13px;color:var(--text);line-height:1.5}
+  .ai-bar svg.icon-info{width:16px;height:16px;color:var(--teal);flex-shrink:0}
+  .ai-bar a{color:var(--teal);font-weight:600;cursor:pointer}
+
+  /* ============= Delivery KV list (right column) ============= */
+  .kv-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;
+    border-bottom:1px solid var(--border);font-size:12px}
+  .kv-row:last-child{border:none}
+  .kv-row .k{color:var(--text-2)}
+  .kv-row .k .lbl-i{border-bottom:1px dotted var(--text-2);cursor:pointer;font-weight:400;
+    text-transform:none;letter-spacing:0;font-size:12px;color:var(--text-2);margin-bottom:0;display:inline}
+  .kv-row .k .lbl-i:hover{color:var(--teal);border-color:var(--teal)}
+  .kv-row .v{font-weight:500;color:var(--text)}
+
+  /* ============= Footer ============= */
+  .footer-row{text-align:center;padding:18px 0 8px;font-size:12px;color:var(--text-2)}
+  .footer-row a{color:var(--teal);font-weight:500;display:inline-flex;align-items:center;gap:6px}
+  .footer-row a svg{width:10px;height:10px}
+
+</style>
+</head>
+<body>
+
+<!-- ===== Reusable inline SVG icons (defs) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-arrow-right" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M3 8h10M9 4l4 4-4 4"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M8 3v10M4 9l4 4 4-4"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M8 13V3M4 7l4-4 4 4"/></symbol>
+    <symbol id="i-chevron-l" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M10 4l-4 4 4 4"/></symbol>
+    <symbol id="i-chevron-r" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M6 4l4 4-4 4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M3 3l10 10M13 3L3 13"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M11.5 2.5l2 2L6 12l-3 1 1-3z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M10.5 10.5L14 14"/></symbol>
+    <symbol id="i-help" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M6 6c0-1 1-2 2-2s2 .8 2 2-2 1.5-2 3M8 11.5v.1"/></symbol>
+    <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M8 4v5M8 11v.1"/></symbol>
+    <symbol id="i-cog" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5L13 13M3 13l1.5-1.5M11.5 4.5L13 3"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 4h12l-1 8H3z"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M5 4V3a3 3 0 016 0v1"/></symbol>
+    <symbol id="i-cursor" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M3 2l4 11 2-4 4-2z"/></symbol>
+    <symbol id="i-card" viewBox="0 0 16 16"><rect x="1" y="4" width="14" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M1 7h14"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 16 16"><rect x="4" y="1" width="8" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M7 13h2"/></symbol>
+    <!-- Nav icons -->
+    <symbol id="n-home" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 7l6-5 6 5v7H2zM6 14V9h4v5"/></symbol>
+    <symbol id="n-camp" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 5l6 4 6-4"/></symbol>
+    <symbol id="n-auto" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M9 2L4 9h4l-1 5 5-7H8z"/></symbol>
+    <symbol id="n-sms" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M3 4h10v7H6l-3 3z"/></symbol>
+    <symbol id="n-form" viewBox="0 0 16 16"><rect x="3" y="2" width="10" height="12" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M5 5h6M5 8h6M5 11h4"/></symbol>
+    <symbol id="n-aud" viewBox="0 0 16 16"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 14c0-2.5 2-4 4-4s4 1.5 4 4"/><circle cx="11" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M9 13c0-1.7 1.3-3 3-3s3 1.3 3 3"/></symbol>
+    <symbol id="n-anal" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 14V6M6 14V2M10 14V8M14 14v-5"/></symbol>
+    <symbol id="n-web" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 8h12M8 2c2 2.5 2 9 0 12M8 2c-2 2.5-2 9 0 12"/></symbol>
+    <symbol id="n-cont" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 6h12M6 2v12"/></symbol>
+    <symbol id="n-int" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="2" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="9" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="yellow-bar"></div>
+
+    <!-- Real Mailchimp Freddie mark (yellow on dark circle, official path) -->
+    <div class="logo-wrap">
+      <div class="freddie-circle">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Mailchimp">
+          <path fill="#FFE01B" d="M11.267 0C6.791-.015-1.82 10.246 1.397 12.964l.79.669a3.88 3.88 0 0 0-.22 1.792c.084.84.518 1.644 1.22 2.266.666.59 1.542.964 2.392.964 1.406 3.24 4.62 5.228 8.386 5.34 4.04.12 7.433-1.776 8.854-5.182.093-.24.488-1.316.488-2.267 0-.956-.54-1.352-.885-1.352-.01-.037-.078-.286-.172-.586-.093-.3-.19-.51-.19-.51.375-.563.382-1.065.332-1.35-.053-.353-.2-.653-.496-.964-.296-.311-.902-.63-1.753-.868l-.446-.124c-.002-.019-.024-1.053-.043-1.497-.014-.32-.042-.822-.197-1.315-.186-.668-.508-1.253-.911-1.627 1.112-1.152 1.806-2.422 1.804-3.511-.003-2.095-2.576-2.729-5.746-1.416l-.672.285A678.22 678.22 0 0 0 12.7.504C12.304.159 11.817.002 11.267 0zm.073.873c.166 0 .322.019.465.058.297.084 1.28 1.224 1.28 1.224s-1.826 1.013-3.52 2.426c-2.28 1.757-4.005 4.311-5.037 7.082-.811.158-1.526.618-1.963 1.253-.261-.218-.748-.64-.834-.804-.698-1.326.761-3.902 1.781-5.357C5.834 3.44 9.37.867 11.34.873zm3.286 3.273c.04-.002.06.05.028.074-.143.11-.299.26-.413.414a.04.04 0 0 0 .031.064c.659.004 1.587.235 2.192.574.041.023.012.103-.034.092-.915-.21-2.414-.369-3.97.01-1.39.34-2.45.863-3.224 1.426-.04.028-.086-.023-.055-.06.896-1.035 1.999-1.935 2.987-2.44.034-.018.07.019.052.052-.079.143-.23.447-.278.678-.007.035.032.063.062.042.615-.42 1.684-.868 2.622-.926zm3.023 3.205l.056.001a.896.896 0 0 1 .456.146c.534.355.61 1.216.638 1.845.015.36.059 1.229.074 1.478.034.571.184.651.487.751.17.057.33.098.563.164.706.198 1.125.4 1.39.658.157.162.23.333.253.497.083.608-.472 1.36-1.942 2.041-1.607.746-3.557.935-4.904.785l-.471-.053c-1.078-.145-1.693 1.247-1.046 2.201.417.615 1.552 1.015 2.688 1.015 2.604 0 4.605-1.111 5.35-2.072a.987.987 0 0 0 .06-.085c.036-.055.006-.085-.04-.054-.608.416-3.31 2.069-6.2 1.571 0 0-.351-.057-.672-.182-.255-.1-.788-.344-.853-.891 2.333.72 3.801.039 3.801.039a.072.072 0 0 0 .042-.072.067.067 0 0 0-.074-.06s-1.911.283-3.718-.378c.197-.64.72-.408 1.51-.345a11.045 11.045 0 0 0 3.647-.394c.818-.234 1.892-.697 2.727-1.356.281.618.38 1.299.38 1.299s.219-.04.4.073c.173.106.299.326.213.895-.176 1.063-.628 1.926-1.387 2.72a5.714 5.714 0 0 1-1.666 1.244c-.34.18-.704.334-1.087.46-2.863.935-5.794-.093-6.739-2.3a3.545 3.545 0 0 1-.189-.522c-.403-1.455-.06-3.2 1.008-4.299.065-.07.132-.153.132-.256 0-.087-.055-.179-.102-.243-.374-.543-1.669-1.466-1.409-3.254.187-1.284 1.31-2.189 2.357-2.135.089.004.177.01.266.015.453.027.85.085 1.223.1.625.028 1.187-.063 1.853-.618.225-.187.405-.35.71-.401.028-.005.092-.028.215-.028zm.022 2.18a.42.42 0 0 0-.06.005c-.335.054-.347.468-.228 1.04.068.32.187.595.32.765.175-.02.343-.022.498 0 .089-.205.104-.557.024-.942-.112-.535-.261-.872-.554-.868zm-3.66 1.546a1.724 1.724 0 0 0-1.016.326c-.16.117-.311.28-.29.378.008.032.031.056.088.063.131.015.592-.217 1.122-.25.374-.023.684.094.923.2.239.104.386.173.443.113.037-.038.026-.11-.031-.204-.118-.192-.36-.387-.618-.497a1.601 1.601 0 0 0-.621-.129zm4.082.81c-.171-.003-.313.186-.317.42-.004.236.131.43.303.432.172.003.314-.185.318-.42.004-.236-.132-.429-.304-.432zm-3.58.172c-.05 0-.102.002-.155.008-.311.05-.483.152-.593.247-.094.082-.152.173-.152.237a.075.075 0 0 0 .075.076c.07 0 .228-.063.228-.063a1.98 1.98 0 0 1 1.001-.104c.157.018.23.027.265-.026.01-.016.022-.049-.01-.1-.063-.103-.311-.269-.66-.275zm2.26.4c-.127 0-.235.051-.283.148-.075.154.035.363.246.466.21.104.443.063.52-.09.075-.155-.035-.364-.246-.467a.542.542 0 0 0-.237-.058zm-11.635.024c.048 0 .098 0 .149.003.73.04 1.806.6 2.052 2.19.217 1.41-.128 2.843-1.449 3.069-.123.02-.248.029-.374.026-1.22-.033-2.539-1.132-2.67-2.435-.145-1.44.591-2.548 1.894-2.811.117-.024.252-.04.398-.042zm-.07.927a1.144 1.144 0 0 0-.847.364c-.38.418-.439.988-.366 1.19.027.073.07.094.1.098.064.008.16-.039.22-.2a1.2 1.2 0 0 0 .017-.052 1.58 1.58 0 0 1 .157-.37.689.689 0 0 1 .955-.199c.266.174.369.5.255.81-.058.161-.154.469-.133.721.043.511.357.717.64.738.274.01.466-.143.515-.256.029-.067.005-.107-.011-.125-.043-.053-.113-.037-.18-.021a.638.638 0 0 1-.16.022.347.347 0 0 1-.294-.148c-.078-.12-.073-.3.013-.504.011-.028.025-.058.04-.092.138-.308.368-.825.11-1.317-.195-.37-.513-.602-.894-.65a1.135 1.135 0 0 0-.138-.01z"/>
+        </svg>
+      </div>
+    </div>
+
+    <button class="nav-create">
+      <svg width="14" height="14"><use href="#i-edit"/></svg>
+      Create
+    </button>
+
+    <nav class="nav">
+      <a class="nav-item" href="index.html" style="text-decoration:none"><svg><use href="#n-home"/></svg>Home</a>
+      <div class="nav-item"><svg><use href="#n-camp"/></svg>Campaigns</div>
+      <div class="nav-item"><svg><use href="#n-auto"/></svg>Automations</div>
+      <div class="nav-item"><svg><use href="#n-sms"/></svg>SMS</div>
+      <div class="nav-item"><svg><use href="#n-form"/></svg>Forms<span class="badge-new">New</span></div>
+      <div class="nav-item"><svg><use href="#n-aud"/></svg>Audience</div>
+      <a class="nav-item active" href="analytics.html" style="text-decoration:none"><svg><use href="#n-anal"/></svg>Analytics</a>
+      <div class="nav-sub">
+        <div class="nav-item active">Audience</div>
+        <div class="nav-item">Reports</div>
+        <div class="nav-item">Conversion insights<span class="badge-new">New</span></div>
+        <div class="nav-item">Custom reports</div>
+      </div>
+      <div class="nav-item"><svg><use href="#n-web"/></svg>Website</div>
+      <div class="nav-item"><svg><use href="#n-cont"/></svg>Content</div>
+      <div class="nav-item"><svg><use href="#n-int"/></svg>Integrations</div>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div></div>
+      <div class="search">
+        <svg width="14" height="14"><use href="#i-search"/></svg>
+        <input placeholder="Search…"/>
+      </div>
+      <div class="topbar-right">
+        <span class="live-help">Live expert help</span>
+        <svg class="help-icon"><use href="#i-help"/></svg>
+        <div class="avatar">D</div>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="page-header">
+        <h1 class="page-title">Marketing dashboard</h1>
+        <div class="page-actions">
+          <button class="btn-ghost">
+            <svg><use href="#i-cog"/></svg>
+            Analytics settings
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <div><label>Audience</label><select><option>Goodnight Fox</option></select></div>
+        <div><label>Date range</label><select><option>Last 30 days</option></select></div>
+        <div><label>Comparison</label><select><option>Audience averages</option></select></div>
+        <div><label>Filter by message name</label><select><option>3 messages selected</option></select></div>
+        <div class="bot-pill">Bot filtering on</div>
+      </div>
+
+      <!-- ===== Monitor performance card ===== -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">
+              Monitor performance
+              <svg class="edit"><use href="#i-edit"/></svg>
+            </h2>
+            <p class="card-sub">Apr 2, 2026 — May 1, 2026 · Compared to audience averages</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+            <span class="freshness-pill fresh"><span class="dot"></span>Engagement · updated 12m ago</span>
+            <div class="card-toggle"><span class="active">All</span><span>Email</span><span>SMS</span></div>
+          </div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi">
+            <div class="kpi-label">
+              <svg><use href="#i-cart"/></svg>
+              <span class="lbl" data-tip="revenue">Revenue</span>
+            </div>
+            <div class="kpi-value">$0</div>
+            <span class="badge differs" data-recipe="revenue">Differs from Shopify</span>
+            <div class="kpi-meta">
+              <div class="row"><svg><use href="#i-card"/></svg><span>$0</span></div>
+              <div class="row"><svg><use href="#i-phone"/></svg><span>$0</span></div>
+            </div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-label">
+              <svg><use href="#i-cart"/></svg>
+              <span class="lbl" data-tip="aor">Average order revenue</span>
+            </div>
+            <div class="kpi-value">$0</div>
+            <span class="badge differs" data-recipe="aor">Differs from Shopify</span>
+            <div class="kpi-meta">
+              <div class="row"><svg><use href="#i-card"/></svg><span>$0</span></div>
+              <div class="row"><svg><use href="#i-phone"/></svg><span>$0</span></div>
+            </div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-label">
+              <svg><use href="#i-cart"/></svg>
+              <span class="lbl" data-tip="orders">Orders</span>
+            </div>
+            <div class="kpi-value">0</div>
+            <span class="badge differs" data-recipe="orders">Differs from Shopify</span>
+            <div class="kpi-meta">
+              <div class="row"><svg><use href="#i-card"/></svg><span>0</span></div>
+              <div class="row"><svg><use href="#i-phone"/></svg><span>0</span></div>
+            </div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-label">
+              <svg><use href="#i-cursor"/></svg>
+              <span class="lbl" data-tip="clickrate">Click rate</span>
+            </div>
+            <div class="kpi-value">0.79%</div>
+            <span class="kpi-delta down"><svg><use href="#i-arrow-down"/></svg>13.4%</span>
+            <span class="badge official" data-recipe="clickrate">Official</span>
+            <div class="kpi-meta">
+              <div class="row"><svg><use href="#i-card"/></svg><span>0.79%</span></div>
+              <div class="row"><svg><use href="#i-phone"/></svg><span>0%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Performance over time card ===== -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">Performance over time</h2>
+            <p class="card-sub">Apr 2, 2026 — May 1, 2026 · Compared to audience averages</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+            <span class="freshness-pill fresh"><span class="dot"></span>Engagement · updated 12m ago</span>
+            <div class="card-toggle"><span class="active">Day</span><span>Week</span><span>Month</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:24px;margin-top:8px">
+          <div>
+            <div style="font-size:12px;color:var(--text-2)">
+              <span class="lbl-i" data-tip="clickrate">Click rate</span>
+            </div>
+            <div style="font-size:24px;font-weight:600;margin-top:2px;color:var(--text);letter-spacing:-.3px">
+              0.79% <span style="font-size:14px;color:var(--text-2);font-weight:400">--</span>
+            </div>
+          </div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)">
+            Metric:
+            <select style="height:28px;border:1px solid var(--border-2);border-radius:4px;padding:0 22px 0 8px;font-size:12px;color:var(--teal);font-weight:500;background:#fff">
+              <option>Click rate</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="chart-wrap">
+          <div>
+            <div class="chart-area">
+              <div class="chart-y"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div>
+              <div class="chart" id="chart"></div>
+            </div>
+            <div class="chart-x" id="chart-x"></div>
+            <div class="pager">
+              <span>0 - 16 of 30</span>
+              <div class="arrows">
+                <span class="arrow-btn"><svg><use href="#i-chevron-l"/></svg>Previous</span>
+                <span class="arrow-btn">Next<svg><use href="#i-chevron-r"/></svg></span>
+                <span class="chart-legend"><span class="swatch"></span>Click rate</span>
+              </div>
+            </div>
+          </div>
+          <div class="chart-side">
+            <div class="label"><span class="lbl-i" data-tip="totalcount">Total message count</span></div>
+            <div class="val">3</div>
+            <div class="label"><span class="lbl-i" data-tip="totalsent">Total messages sent</span></div>
+            <div class="val">9,680</div>
+          </div>
+        </div>
+
+        <div class="mark-explainer" id="mark-explainer" style="display:none">
+          <div class="mark-head">
+            <span class="date" id="me-date">Apr 21, 2026</span>
+            <span class="val" id="me-val">0.85%</span>
+          </div>
+          <span class="lbl">What contributed</span>
+          <div class="mark-grid">
+            <span class="k">Campaigns sent</span><span class="v">2</span>
+            <span class="k">Recipients delivered</span><span class="v">3,420</span>
+            <span class="k">Unique clickers</span><span class="v">29</span>
+            <span class="k">Top campaign</span><span class="v">Spring Promo</span>
+          </div>
+          <span class="lbl">Why it changed</span>
+          <div class="mark-why"><strong>+8% above prior 7-day average.</strong> Driver: a re-engagement send to returning subscribers performed 2.1× better than typical.</div>
+        </div>
+      </div>
+
+      <!-- ===== Conversions card ===== -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">Conversions</h2>
+            <p class="card-sub">Apr 2, 2026 — May 1, 2026 · Compared to audience averages</p>
+          </div>
+          <span class="freshness-pill delayed"><span class="dot"></span>Commerce · 98% complete</span>
+        </div>
+
+        <div class="funnel-tabs">
+          <span class="ft active">Conversion funnel</span>
+          <span class="ft">Conversions over time</span>
+        </div>
+
+        <div class="rev-per"><span class="lbl-i" data-tip="revpr">Revenue per recipient</span></div>
+        <div class="rev-val">
+          $0
+          <span style="font-size:13px;color:var(--text-2);font-weight:400">--</span>
+          <span class="badge differs" data-recipe="revpr">Differs from Shopify</span>
+        </div>
+
+        <div class="funnel">
+          <div class="funnel-bar"><div class="funnel-fill" style="height:100%"></div></div>
+          <div class="funnel-bar"><div class="funnel-fill" style="height:65%"></div></div>
+          <div class="funnel-bar"><div class="funnel-fill" style="height:8%"></div></div>
+          <div class="funnel-bar"><div class="funnel-fill empty"></div></div>
+          <div class="funnel-bar"><div class="funnel-fill empty"></div></div>
+        </div>
+
+        <div class="funnel-labels">
+          <div class="funnel-step">
+            <div class="step-label"><span class="lbl-i" data-tip="deliveries">Deliveries</span></div>
+            <div class="step-val">9,645</div>
+            <div class="drop">--</div>
+            <span class="badge official" data-recipe="deliveries">Official</span>
+          </div>
+          <div class="funnel-step">
+            <div class="step-label"><span class="lbl-i" data-tip="opens">Opened</span></div>
+            <div class="step-val">1,000</div>
+            <div class="drop"><svg><use href="#i-arrow-down"/></svg>35.2% Drop-off</div>
+            <span class="badge official" data-recipe="opens">Official</span>
+          </div>
+          <div class="funnel-step">
+            <div class="step-label"><span class="lbl-i" data-tip="clicks">Clicked</span></div>
+            <div class="step-val">76</div>
+            <div class="drop"><svg><use href="#i-arrow-down"/></svg>98.8% Drop-off</div>
+            <span class="badge official" data-recipe="clicks">Official</span>
+          </div>
+          <div class="funnel-step">
+            <div class="step-label"><span class="lbl-i" data-tip="orders">Orders</span></div>
+            <div class="step-val">0</div>
+            <div class="drop"><svg><use href="#i-arrow-down"/></svg>100% Drop-off</div>
+            <span class="badge differs" data-recipe="orders">Differs from Shopify</span>
+          </div>
+          <div class="funnel-step">
+            <div class="step-label"><span class="lbl-i" data-tip="revenue">Revenue</span></div>
+            <div class="step-val">$0</div>
+            <div class="drop">--</div>
+            <span class="badge differs" data-recipe="revenue">Differs from Shopify</span>
+          </div>
+        </div>
+
+        <div class="ai-bar">
+          <svg class="icon-info"><use href="#i-info"/></svg>
+          <span>The Orders step shows 0, but Shopify shows 4 orders this period. <a data-recipe="orders" data-open-tab="compare">Compare with Shopify</a></span>
+        </div>
+      </div>
+
+      <!-- ===== Delivery card ===== -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">Delivery</h2>
+            <p class="card-sub">Apr 2, 2026 — May 1, 2026 · Compared to audience averages</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+            <span class="freshness-pill fresh"><span class="dot"></span>Delivery · updated 12m ago</span>
+            <div class="card-toggle"><span class="active">Email</span><span>SMS</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:24px;margin-top:8px;margin-bottom:6px">
+          <div>
+            <div style="font-size:12px;color:var(--text-2)">
+              <span class="lbl-i" data-tip="abuserate">Abuse report rate</span>
+            </div>
+            <div style="font-size:24px;font-weight:600;margin-top:2px;color:var(--text);letter-spacing:-.3px;display:flex;align-items:center;gap:10px">
+              -- <span style="font-size:14px;color:var(--text-2);font-weight:400">--</span>
+              <span class="badge official" data-recipe="abuserate">Official</span>
+            </div>
+          </div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)">
+            Metric:
+            <select style="height:28px;border:1px solid var(--border-2);border-radius:4px;padding:0 22px 0 8px;font-size:12px;color:var(--teal);font-weight:500;background:#fff">
+              <option>Abuse report rate</option>
+            </select>
+            <div class="card-toggle" style="margin-left:8px"><span class="active">Day</span><span>Week</span><span>Month</span></div>
+          </div>
+        </div>
+
+        <div class="chart-wrap" style="margin-top:14px">
+          <div>
+            <div class="chart-area">
+              <div class="chart-y"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div>
+              <div class="chart" id="chart-2"></div>
+            </div>
+            <div class="chart-x" id="chart-x-2"></div>
+            <div class="pager">
+              <span>0 - 16 of 30</span>
+              <div class="arrows">
+                <span class="arrow-btn"><svg><use href="#i-chevron-l"/></svg>Previous</span>
+                <span class="arrow-btn">Next<svg><use href="#i-chevron-r"/></svg></span>
+                <span class="chart-legend"><span class="swatch" style="background:var(--chart-pink)"></span>Abuse report rate</span>
+              </div>
+            </div>
+          </div>
+          <div class="chart-side">
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px">Delivery details</div>
+            <div class="kv-row"><span class="k"><span class="lbl-i" data-tip="emailssent">Emails sent</span></span><span class="v">9,680</span></div>
+            <div class="kv-row"><span class="k"><span class="lbl-i" data-tip="deliveries">Deliveries</span></span><span class="v">9,645</span></div>
+            <div class="kv-row"><span class="k"><span class="lbl-i" data-tip="bounces">Bounces</span></span><span class="v">35</span></div>
+            <div class="kv-row"><span class="k"><span class="lbl-i" data-tip="unsub">Unsubscribed</span></span><span class="v">16</span></div>
+            <div class="kv-row"><span class="k"><span class="lbl-i" data-tip="abusereports">Abuse reports</span></span><span class="v">0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <a href="#methodology">View methodology &amp; metric definitions <svg><use href="#i-arrow-right"/></svg></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Layer 1: hover tooltip -->
+<div class="hover-tip" id="hover-tip">
+  <div id="tip-def"></div>
+  <div class="tip-cta" id="tip-cta">Click for full breakdown <svg><use href="#i-arrow-right"/></svg></div>
+</div>
+
+<!-- Layer 2: recipe card -->
+<div class="recipe-overlay" id="recipe-overlay">
+  <div class="recipe">
+    <div class="recipe-head">
+      <div class="recipe-title-wrap">
+        <h2 class="recipe-title" id="r-title"></h2>
+        <span class="badge" id="r-badge"></span>
+      </div>
+      <button class="icon-btn" onclick="closeRecipe()"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="recipe-tabs" id="r-tabs">
+      <span class="recipe-tab active" data-tab="meaning">Meaning</span>
+      <span class="recipe-tab" data-tab="formula">Formula</span>
+      <span class="recipe-tab" data-tab="sources">Sources</span>
+      <span class="recipe-tab" data-tab="trust">Trust</span>
+      <span class="recipe-tab" data-tab="compare">Compare</span>
+      <span class="recipe-tab" data-tab="ai">Ask AI</span>
+    </div>
+    <div class="recipe-body" id="r-body"></div>
+    <div class="recipe-actions">
+      <span class="act" id="act-compare" onclick="switchTab('compare')">Compare with Shopify</span>
+      <span class="act" onclick="switchTab('ai')">Ask Analytics AI</span>
+      <span class="act">View methodology</span>
+    </div>
+  </div>
+</div>
+
+<!-- Layer 3: reconciliation drawer -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h2 id="drawer-title">Why does this differ from Shopify?</h2>
+    <button class="icon-btn" onclick="closeDrawer()"><svg><use href="#i-x"/></svg></button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<script>
+/* ============================================================
+   METRIC REGISTRY
+   ============================================================ */
+const METRICS = {
+  revenue: {
+    title:"Revenue", badge:{label:"Differs from Shopify",cls:"differs"},
+    short:"Revenue from orders attributed to your campaigns within the 5-day click window.",
+    long:"Mailchimp credits revenue to a campaign when a recipient clicked the campaign and then placed an order in Shopify within the attribution window. This will be lower than total Shopify revenue because it only includes campaign-attributed orders.",
+    formula:"Sum of (Attributed Orders x Order Value)",
+    lineage:[
+      {label:"Campaign sent", sub:"9,680 messages dispatched"},
+      {label:"Recipient clicked", sub:"76 unique clickers"},
+      {label:"Visited store", sub:"Tracked via UTM and identity match"},
+      {label:"Order placed in Shopify", sub:"4 orders within store"},
+      {label:"Order webhook received", sub:"Shopify to Mailchimp pipeline"},
+      {label:"Attribution engine matched", sub:"5-day click window applied"},
+      {label:"Revenue attributed", sub:"$0 — no orders matched campaign clicks"},
+    ],
+    sources:[{sys:"Shopify order events",icon:"S"},{sys:"Mailchimp campaign engagement",icon:"M"},{sys:"Attribution engine v2.4",icon:"A"}],
+    settings:["Attribution: 5-day click","Timezone: Account","Bot filter: On"],
+    trust:[
+      {label:"Last updated",val:"38 minutes ago",status:"amber"},
+      {label:"Processing",val:"98% complete - finalizes in approx 2 hours",status:"amber"},
+      {label:"Known issues",val:"Shopify order sync running behind",status:"amber"},
+      {label:"Last definition change",val:"Apr 2026 - attribution engine v2.4",status:"green"},
+    ],
+    compare:[
+      {platform:"Shopify",icon:"S",desc:"Shows total store revenue - all orders, regardless of source. Mailchimp shows only orders attributed to a campaign click within 5 days."},
+      {platform:"Triple Whale",icon:"T",desc:"May use a different attribution window or include view-through. Compare attribution windows in your Triple Whale settings."},
+      {platform:"GA4",icon:"G",desc:"Uses session-based identity stitching. Mailchimp uses email identity, so cross-device journeys may match differently."},
+      {platform:"Meta Ads",icon:"M",desc:"Uses 7-day view + 1-day click by default. Mailchimp uses 5-day click only."},
+    ],
+    reconcile:{
+      mc:{value:"$0",label:"Revenue attributed to your campaigns"},
+      shop:{value:"$418",label:"Total store revenue (4 orders)"},
+      gap:"$418",
+      reasons:[
+        "Shopify includes all orders. Mailchimp includes only orders that came from a campaign click within 5 days.",
+        "Your attribution window is 5 days after click. Orders placed more than 5 days after the campaign click won't be attributed.",
+        "Some orders may not have a matching campaign interaction - the buyer found you via direct, search, or another channel.",
+        "Refunds, tax, shipping, or discounts may be handled differently between the two systems.",
+      ],
+    },
+    ai:["Why is revenue $0 when Shopify shows $418?","Which orders are excluded by attribution?","Explain this like I'm new to attribution","What changed vs last campaign?"],
+  },
+  aor:{
+    title:"Average order revenue", badge:{label:"Differs from Shopify",cls:"differs"},
+    short:"Average revenue per attributed order in the period.",
+    long:"Calculated only across orders attributed to your campaigns. Shopify's storewide AOV will differ because it includes all orders.",
+    formula:"Attributed Revenue / Attributed Orders",
+    lineage:[
+      {label:"Attributed orders identified",sub:"0 orders this period"},
+      {label:"Sum of order values",sub:"$0"},
+      {label:"Divide by order count",sub:"-- (no orders)"},
+    ],
+    sources:[{sys:"Shopify order events",icon:"S"},{sys:"Attribution engine v2.4",icon:"A"}],
+    settings:["Attribution: 5-day click","Timezone: Account"],
+    trust:[
+      {label:"Last updated",val:"38 minutes ago",status:"amber"},
+      {label:"Processing",val:"98% complete",status:"amber"},
+      {label:"Known issues",val:"Shopify sync delayed",status:"amber"},
+      {label:"Last definition change",val:"Apr 2026",status:"green"},
+    ],
+    compare:[{platform:"Shopify",icon:"S",desc:"Storewide AOV includes every order. Mailchimp restricts to campaign-attributed orders only."}],
+    reconcile:{
+      mc:{value:"$0",label:"AOV across attributed orders"},
+      shop:{value:"$104.50",label:"Storewide AOV"},
+      gap:"$104.50",
+      reasons:[
+        "Mailchimp has 0 attributed orders this period - no orders to average.",
+        "Shopify averages all 4 orders this period regardless of source.",
+        "Even with the same orders, refund handling and tax inclusion may differ.",
+      ],
+    },
+    ai:["Why is AOV $0?","How does Shopify storewide AOV compare?","What's a healthy AOV for my industry?"],
+  },
+  orders:{
+    title:"Orders", badge:{label:"Differs from Shopify",cls:"differs"},
+    short:"Orders attributed to your campaigns within the 5-day click window.",
+    long:"Counts unique orders where the buyer clicked a campaign and placed an order within 5 days. One buyer placing 2 orders counts as 2.",
+    formula:"Count(Orders WHERE matched_campaign_click_within_5d)",
+    lineage:[
+      {label:"Campaign sent",sub:"9,680 messages dispatched"},
+      {label:"Recipient clicked",sub:"76 unique clickers"},
+      {label:"Order placed in Shopify",sub:"4 orders this period"},
+      {label:"Order webhook received",sub:"Shopify to Mailchimp"},
+      {label:"Attribution engine matched",sub:"0 of 4 matched campaign clicks"},
+      {label:"Orders count appears",sub:"0 attributed orders"},
+    ],
+    sources:[{sys:"Shopify order events",icon:"S"},{sys:"Mailchimp campaign engagement",icon:"M"},{sys:"Attribution engine v2.4",icon:"A"}],
+    settings:["Attribution: 5-day click","Timezone: Account"],
+    trust:[
+      {label:"Last updated",val:"38 minutes ago",status:"amber"},
+      {label:"Processing",val:"98% complete - finalizes in approx 2 hours",status:"amber"},
+      {label:"Known issues",val:"Shopify order sync running behind",status:"amber"},
+      {label:"Last definition change",val:"Apr 2026 - attribution engine v2.4",status:"green"},
+    ],
+    compare:[
+      {platform:"Shopify",icon:"S",desc:"Shopify shows 4 orders this period (all sources). Mailchimp shows orders that came from a campaign click in the 5-day window."},
+      {platform:"GA4",icon:"G",desc:"GA4 may attribute these to 'Email' channel using its session model - Mailchimp uses identity match instead."},
+    ],
+    reconcile:{
+      mc:{value:"0",label:"Orders attributed to campaigns"},
+      shop:{value:"4",label:"Total Shopify orders"},
+      gap:"4",
+      reasons:[
+        "All 4 Shopify orders this period had no matching campaign click within 5 days. They were direct, search, or organic.",
+        "Your campaign was sent to 9,680 recipients but only 76 clicked. None of the 4 buyers were among the 76 clickers.",
+        "The buyers may have purchased before your latest send went out.",
+        "Check Shopify customer source: if marked 'direct', no campaign attribution will apply.",
+      ],
+    },
+    ai:["Why are 0 orders attributed when Shopify shows 4?","Which orders are excluded by attribution?","Should I extend my attribution window?","Compare orders by campaign"],
+  },
+  clickrate:{
+    title:"Click rate", badge:{label:"Official",cls:"official"},
+    short:"Unique recipients who clicked any tracked link in your email.",
+    long:"Click rate counts unique clickers, not total clicks. The same person clicking 5 links counts once. Bot clicks are filtered using behavioral heuristics.",
+    formula:"Unique Clickers / Delivered Messages",
+    lineage:[
+      {label:"Campaign sent",sub:"9,680 messages dispatched"},
+      {label:"Recipient opens email",sub:"1,000 unique openers"},
+      {label:"Recipient clicks tracked link",sub:"Click redirected through Mailchimp"},
+      {label:"Bot filter applied",sub:"Behavioral heuristic v3.2"},
+      {label:"Click rate computed",sub:"76 / 9,645 = 0.79%"},
+    ],
+    sources:[{sys:"Mailchimp link redirect tracker",icon:"M"},{sys:"Bot filter v3.2",icon:"B"}],
+    settings:["Bot filter: On","Timezone: Account","Track all links: On"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"Sep 2025 - bot filter v3.0",status:"green"},
+    ],
+    compare:null,
+    confusion:"This will not match \"Total Clicks\" because Total Clicks counts every click - the same person clicking 5 links shows as 5.",
+    ai:["Why did click rate drop 13.4%?","Which link is getting the most clicks?","Compare click rate by device","Show top performing campaigns by CTR"],
+  },
+  totalcount:{
+    title:"Total message count", badge:{label:"Official",cls:"official"},
+    short:"Number of unique messages sent in this period across selected channels.",
+    long:"Counts each campaign or automation send as one message, regardless of recipients. SMS and email are counted separately.",
+    formula:"Count(distinct send_id WHERE in_date_range)",
+    lineage:[
+      {label:"Campaign or automation triggered",sub:"3 sends this period"},
+      {label:"Send completed",sub:"All 3 reached send-complete state"},
+      {label:"Counted in dashboard",sub:"Total: 3 messages"},
+    ],
+    sources:[{sys:"Mailchimp send infrastructure",icon:"M"}],
+    settings:["Channel: Email + SMS","Timezone: Account"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"No recent changes",status:"green"},
+    ],
+    compare:null,
+    ai:["What counts as a message?","Show me the 3 messages","How does this compare to last period?"],
+  },
+  totalsent:{
+    title:"Total messages sent", badge:{label:"Official",cls:"official"},
+    short:"Total number of recipients who received any message in this period.",
+    long:"Sums recipient counts across all sends. A subscriber who got 2 sends counts twice.",
+    formula:"Sum of recipient_count per send",
+    lineage:[
+      {label:"3 campaigns/sends",sub:"Each send had its own audience"},
+      {label:"Sum of recipients",sub:"9,680 total send-attempts"},
+    ],
+    sources:[{sys:"Mailchimp send infrastructure",icon:"M"}],
+    settings:["Channel: Email + SMS"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"No recent changes",status:"green"},
+    ],
+    compare:null,
+    ai:["Is 9,680 normal for my audience size?","How many unique recipients did I reach?"],
+  },
+  revpr:{
+    title:"Revenue per recipient", badge:{label:"Differs from Shopify",cls:"differs"},
+    short:"Attributed revenue divided by total recipients reached.",
+    long:"How much revenue each recipient is generating, on average. Useful for comparing campaign efficiency.",
+    formula:"Attributed Revenue / Total Recipients",
+    lineage:[
+      {label:"Recipients reached",sub:"9,645 deliveries"},
+      {label:"Attributed revenue",sub:"$0"},
+      {label:"Divide",sub:"$0.00 per recipient"},
+    ],
+    sources:[{sys:"Shopify order events",icon:"S"},{sys:"Mailchimp campaign engagement",icon:"M"}],
+    settings:["Attribution: 5-day click"],
+    trust:[
+      {label:"Last updated",val:"38 minutes ago",status:"amber"},
+      {label:"Processing",val:"98% complete",status:"amber"},
+      {label:"Known issues",val:"Shopify sync delayed",status:"amber"},
+      {label:"Last definition change",val:"Apr 2026",status:"green"},
+    ],
+    compare:[{platform:"Shopify",icon:"S",desc:"Shopify doesn't compute per-recipient because it doesn't know your audience size - only Mailchimp can compute this."}],
+    ai:["What's a healthy revenue per recipient?","Why is this $0?","How do I improve this?"],
+  },
+  deliveries:{
+    title:"Deliveries", badge:{label:"Official",cls:"official"},
+    short:"Messages successfully delivered to a recipient inbox.",
+    long:"A message is counted as delivered when it's accepted by the recipient mail server. Hard bounces, soft bounces, and rejections are excluded.",
+    formula:"Sent - (Hard bounces + Soft bounces + Rejected)",
+    lineage:[
+      {label:"Campaign queued",sub:"9,680 messages prepared"},
+      {label:"SMTP send",sub:"Sent to recipient mail servers"},
+      {label:"Bounce response",sub:"35 bounces (32 hard, 3 soft)"},
+      {label:"Delivered",sub:"9,645 successful deliveries"},
+    ],
+    sources:[{sys:"Mailchimp send infrastructure",icon:"M"}],
+    settings:["Bounce classification: v2.1","Timezone: Account"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"Jan 2026 - bounce classification v2.1",status:"green"},
+    ],
+    compare:null,
+    ai:["Why did 35 messages bounce?","Show bounce reasons by domain","What's a healthy bounce rate?"],
+  },
+  opens:{
+    title:"Opened", badge:{label:"Official",cls:"official"},
+    short:"Recipients who opened your email at least once.",
+    long:"An open is counted when a recipient downloads tracking pixels in your email. Apple Mail Privacy Protection (MPP) opens are filtered out by Mailchimp's bot detection unless you've turned bot filtering off.",
+    formula:"Unique Openers / Delivered Messages",
+    lineage:[
+      {label:"Campaign sent",sub:"9,680 messages dispatched"},
+      {label:"Email delivered",sub:"9,645 deliveries"},
+      {label:"Pixel loaded by recipient",sub:"Tracked by Mailchimp open beacon"},
+      {label:"Bot filter applied",sub:"MPP and known bot IPs removed (v3.2)"},
+      {label:"Open recorded",sub:"1,000 unique openers"},
+    ],
+    sources:[{sys:"Mailchimp campaign engagement",icon:"M"},{sys:"Bot filter v3.2 - MPP detection",icon:"B"}],
+    settings:["Bot filter: On","MPP filter: On","Timezone: Account"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"Apr 2026 - bot filter v3.2",status:"green"},
+    ],
+    compare:null,
+    confusion:"Open rates have been less reliable since Apple's Mail Privacy Protection (2021). Mailchimp filters MPP opens out by default, but some pre-fetched opens may still slip through.",
+    ai:["Why is my open rate dropping vs last month?","How many of these opens are likely Apple MPP?","Which segment is opening most?","Compare opens by send time"],
+  },
+  clicks:{
+    title:"Clicked", badge:{label:"Official",cls:"official"},
+    short:"Unique recipients who clicked any tracked link in your email.",
+    long:"Counts unique clickers, not total clicks. The same person clicking 5 links shows as 1.",
+    formula:"Unique Clickers (per period)",
+    lineage:[
+      {label:"Email delivered",sub:"9,645 deliveries"},
+      {label:"Recipient opened",sub:"1,000 opens"},
+      {label:"Recipient clicked",sub:"Click redirected through Mailchimp"},
+      {label:"Bot filter applied",sub:"Behavioral heuristic v3.2"},
+      {label:"Click counted",sub:"76 unique clickers"},
+    ],
+    sources:[{sys:"Mailchimp link redirect tracker",icon:"M"},{sys:"Bot filter v3.2",icon:"B"}],
+    settings:["Bot filter: On","Track all links: On"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"Sep 2025",status:"green"},
+    ],
+    compare:null,
+    confusion:"This will not match \"Total Clicks\" because Total Clicks counts every click - the same person clicking 5 links shows as 5.",
+    ai:["Which links are clicked most?","Compare clicks by device","Why did clicks drop?"],
+  },
+  abuserate:{
+    title:"Abuse report rate", badge:{label:"Official",cls:"official"},
+    short:"Percentage of recipients who marked your email as spam.",
+    long:"When a recipient marks your message as spam, their mail provider reports it back to Mailchimp via a feedback loop. High abuse rate hurts deliverability across your whole audience.",
+    formula:"Abuse Reports / Delivered Messages",
+    lineage:[
+      {label:"Email delivered",sub:"9,645 deliveries"},
+      {label:"Recipient marks spam",sub:"In their mail client"},
+      {label:"Feedback loop reports back",sub:"ISP to Mailchimp"},
+      {label:"Abuse rate computed",sub:"0 / 9,645 = 0.00%"},
+    ],
+    sources:[{sys:"ISP feedback loops (Gmail, Yahoo, AOL, etc.)",icon:"I"},{sys:"Mailchimp deliverability pipeline",icon:"M"}],
+    settings:["Feedback loop: All major ISPs","Timezone: Account"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"No recent changes",status:"green"},
+    ],
+    compare:null,
+    confusion:"Abuse rate above 0.1% is a deliverability red flag. Mailchimp may pause sending if it spikes.",
+    ai:["What's a safe abuse rate?","Why are recipients marking my email as spam?","Show abuse reports by campaign"],
+  },
+  emailssent:{
+    title:"Emails sent", badge:{label:"Official",cls:"official"},
+    short:"Total emails attempted in this period.",
+    long:"Counts every email that left Mailchimp's send infrastructure, regardless of whether it was delivered.",
+    formula:"Sum of send_attempts per campaign",
+    lineage:[
+      {label:"Campaigns scheduled",sub:"3 campaigns"},
+      {label:"Send queue processed",sub:"All recipients attempted"},
+      {label:"Attempts counted",sub:"9,680 total"},
+    ],
+    sources:[{sys:"Mailchimp send infrastructure",icon:"M"}],
+    settings:["Channel: Email"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"No recent changes",status:"green"},
+    ],
+    compare:null,
+    ai:["How many recipients did this reach?","Why is sent higher than delivered?"],
+  },
+  bounces:{
+    title:"Bounces", badge:{label:"Official",cls:"official"},
+    short:"Emails that couldn't be delivered to the recipient.",
+    long:"Hard bounces (invalid address, blocked) are permanent failures and the recipient is auto-suppressed. Soft bounces (full inbox, server error) are temporary.",
+    formula:"Hard bounces + Soft bounces",
+    lineage:[
+      {label:"SMTP attempt",sub:"9,680 attempted"},
+      {label:"Recipient mail server response",sub:"4xx or 5xx for failed"},
+      {label:"Bounce classified",sub:"32 hard + 3 soft"},
+      {label:"Hard bounces auto-cleaned",sub:"Removed from active audience"},
+    ],
+    sources:[{sys:"Mailchimp send infrastructure",icon:"M"},{sys:"Bounce classifier v2.1",icon:"B"}],
+    settings:["Auto-clean hard bounces: On"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"Jan 2026 - bounce classification v2.1",status:"green"},
+    ],
+    compare:null,
+    ai:["Why did 35 messages bounce?","Show bounce reasons by domain","What's a healthy bounce rate?","List addresses that bounced"],
+  },
+  unsub:{
+    title:"Unsubscribed", badge:{label:"Official",cls:"official"},
+    short:"Recipients who clicked the unsubscribe link in this period.",
+    long:"Unsubscribes are tracked from the official Mailchimp unsubscribe link. List-Unsubscribe header (one-click) is also counted here.",
+    formula:"Count(unique unsubscribers in period)",
+    lineage:[
+      {label:"Recipient clicks unsubscribe",sub:"In email or via List-Unsubscribe header"},
+      {label:"Mailchimp records request",sub:"Within 1 minute"},
+      {label:"Subscriber removed from active audience",sub:"Won't receive further sends"},
+      {label:"Counter incremented",sub:"16 unsubscribes this period"},
+    ],
+    sources:[{sys:"Mailchimp unsubscribe link",icon:"M"},{sys:"List-Unsubscribe header (RFC 8058)",icon:"L"}],
+    settings:["One-click unsubscribe: On"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"Feb 2026 - RFC 8058 one-click added",status:"green"},
+    ],
+    compare:null,
+    ai:["Which campaign drove most unsubscribes?","What's a healthy unsubscribe rate?","Show unsubscribes by reason"],
+  },
+  abusereports:{
+    title:"Abuse reports", badge:{label:"Official",cls:"official"},
+    short:"Number of recipients who marked your email as spam.",
+    long:"Counted via ISP feedback loops. Each report ties back to a specific campaign and recipient.",
+    formula:"Count(abuse_reports in period)",
+    lineage:[
+      {label:"Email delivered",sub:"9,645 deliveries"},
+      {label:"Recipient marks spam in their mail client",sub:"E.g. Gmail 'Report spam'"},
+      {label:"ISP sends FBL report",sub:"Within hours of mark"},
+      {label:"Mailchimp records report",sub:"0 reports this period"},
+    ],
+    sources:[{sys:"ISP feedback loops",icon:"I"}],
+    settings:["Feedback loop: All major ISPs"],
+    trust:[
+      {label:"Last updated",val:"12 minutes ago",status:"green"},
+      {label:"Processing",val:"Complete",status:"green"},
+      {label:"Known issues",val:"None detected",status:"green"},
+      {label:"Last definition change",val:"No recent changes",status:"green"},
+    ],
+    compare:null,
+    ai:["What happens when someone reports spam?","How do I prevent abuse reports?","Show abuse reports by campaign"],
+  },
+};
+
+/* ============================================================
+   Layer 1 — hover tooltip
+   ============================================================ */
+const tip = document.getElementById("hover-tip");
+const tipDef = document.getElementById("tip-def");
+const tipCta = document.getElementById("tip-cta");
+let tipKey = null;
+let tipHideTimer = null;
+
+function bindTip(el){
+  el.addEventListener("mouseenter", ()=>{
+    const k = el.getAttribute("data-tip");
+    const m = METRICS[k]; if(!m) return;
+    clearTimeout(tipHideTimer);
+    tipKey = k;
+    tipDef.textContent = m.short;
+    const r = el.getBoundingClientRect();
+    tip.style.left = (r.left + window.scrollX) + "px";
+    tip.style.top  = (r.top  + window.scrollY - 4) + "px";
+    tip.classList.add("show");
+    requestAnimationFrame(()=>{
+      tip.style.top = (r.top + window.scrollY - tip.offsetHeight - 8) + "px";
+    });
+  });
+  el.addEventListener("mouseleave", ()=>{
+    tipHideTimer = setTimeout(()=>{ if(!tip.matches(":hover")) tip.classList.remove("show"); },140);
+  });
+  el.addEventListener("click", ()=>{ const k = el.getAttribute("data-tip"); openRecipe(k); });
+}
+document.querySelectorAll("[data-tip]").forEach(bindTip);
+tip.addEventListener("mouseleave", ()=>tip.classList.remove("show"));
+tipCta.addEventListener("click", ()=>{ if(tipKey) openRecipe(tipKey); });
+
+document.querySelectorAll("[data-recipe]").forEach(el=>{
+  el.addEventListener("click",(e)=>{
+    e.stopPropagation();
+    const k = el.getAttribute("data-recipe");
+    const tab = el.getAttribute("data-open-tab") || (el.classList.contains("differs") ? "compare" : "meaning");
+    openRecipe(k, tab);
+  });
+});
+
+/* ============================================================
+   Layer 2 — Recipe Card
+   ============================================================ */
+let currentMetric = null;
+const overlay = document.getElementById("recipe-overlay");
+
+function openRecipe(key, tab="meaning"){
+  const m = METRICS[key]; if(!m) return;
+  currentMetric = key;
+  document.getElementById("r-title").textContent = m.title;
+  const badge = document.getElementById("r-badge");
+  badge.className = "badge " + m.badge.cls;
+  badge.textContent = m.badge.label;
+  document.querySelectorAll("#r-tabs .recipe-tab").forEach(t=>{
+    if(t.dataset.tab==="compare") t.style.display = m.compare ? "" : "none";
+  });
+  document.getElementById("act-compare").style.display = m.compare ? "" : "none";
+  if(tab==="compare" && !m.compare) tab = "meaning";
+  switchTab(tab);
+  overlay.classList.add("show");
+  tip.classList.remove("show");
+}
+function closeRecipe(){ overlay.classList.remove("show"); }
+overlay.addEventListener("click",(e)=>{ if(e.target===overlay) closeRecipe(); });
+document.querySelectorAll("#r-tabs .recipe-tab").forEach(t=>{ t.addEventListener("click",()=>switchTab(t.dataset.tab)); });
+
+function switchTab(tab){
+  document.querySelectorAll("#r-tabs .recipe-tab").forEach(t=>{ t.classList.toggle("active", t.dataset.tab===tab); });
+  const m = METRICS[currentMetric];
+  document.getElementById("r-body").innerHTML = renderTab(tab, m);
+  const cta = document.querySelector("#r-body [data-open-drawer]");
+  if(cta) cta.addEventListener("click", ()=>openDrawer(currentMetric));
+}
+
+function renderTab(tab, m){
+  const arrowSVG = '<svg width="14" height="14"><use href="#i-arrow-right"/></svg>';
+  if(tab==="meaning"){
+    let html = `<div class="meaning-block"><p>${m.short}</p><div class="ctx">${m.long}</div>`;
+    if(m.confusion) html += `<div class="confusion-callout"><strong>Common confusion</strong>${m.confusion}</div>`;
+    html += `</div>`;
+    return html;
+  }
+  if(tab==="formula"){
+    let html = `<div class="formula-pill">${m.formula}</div><span class="lbl">Step by step (lineage)</span>`;
+    m.lineage.forEach((s,i)=>{
+      html += `<div class="lineage-step"><div class="lineage-num">${i+1}</div><div class="lineage-text"><div class="step-label">${s.label}</div><div class="step-sub">${s.sub}</div></div></div>`;
+      if(i<m.lineage.length-1) html += `<div class="lineage-line"></div>`;
+    });
+    return html;
+  }
+  if(tab==="sources"){
+    let html = `<span class="lbl">Data sources</span>`;
+    m.sources.forEach(s=>{ html += `<div class="source-row"><div class="src-icon">${s.icon}</div><span>${s.sys}</span></div>`; });
+    html += `<span class="lbl" style="margin-top:14px">Current settings</span><div>`;
+    m.settings.forEach(s=>{ html += `<span class="settings-pill">${s}</span>`; });
+    html += `</div>`;
+    return html;
+  }
+  if(tab==="trust"){
+    let html = `<span class="lbl">Data status</span>`;
+    m.trust.forEach(r=>{ html += `<div class="trust-row"><span class="lhs">${r.label}</span><span class="rhs ${r.status}"><span class="stat"></span>${r.val}</span></div>`; });
+    const proc = m.trust.find(r=>r.label==="Processing");
+    if(proc && proc.status==="amber"){
+      html += `<div class="progress-track"><div class="progress-fill" style="width:98%"></div></div><div class="progress-meta"><span>0%</span><span style="color:var(--delayed-fg);font-weight:600">98% complete</span><span>100%</span></div>`;
+    }
+    return html;
+  }
+  if(tab==="compare"){
+    if(!m.compare) return `<div style="color:var(--text-2);font-size:13px">No 3rd-party comparison available for this metric.</div>`;
+    let html = "";
+    m.compare.forEach(c=>{ html += `<div class="compare-row"><div class="platform"><span class="src-icon">${c.icon}</span>${c.platform}</div><div class="why">${c.desc}</div></div>`; });
+    if(m.reconcile) html += `<button class="reconcile-cta" data-open-drawer><span>Open full reconciliation</span>${arrowSVG}</button>`;
+    return html;
+  }
+  if(tab==="ai"){
+    let html = `<span class="lbl">Suggested questions about ${m.title}</span>`;
+    m.ai.forEach(q=>{ html += `<div class="ai-prompt"><svg><use href="#i-arrow-right"/></svg>${q}</div>`; });
+    html += `<div class="ai-foot">Powered by Analytics AI. Answers use your campaign data and respect the metric definition shown in the Formula tab. <a>Learn more</a></div>`;
+    return html;
+  }
+  return "";
+}
+
+/* ============================================================
+   Layer 3 — Reconciliation drawer
+   ============================================================ */
+const drawer = document.getElementById("drawer");
+const drawerBg = document.getElementById("drawer-overlay");
+function openDrawer(key){
+  const m = METRICS[key]; if(!m||!m.reconcile) return;
+  const r = m.reconcile;
+  document.getElementById("drawer-title").textContent = `Why does ${m.title} differ from Shopify?`;
+  document.getElementById("drawer-body").innerHTML = `
+    <div class="compare-cards">
+      <div class="compare-card mc"><div class="src-name">Mailchimp</div><div class="v">${r.mc.value}</div><div class="desc">${r.mc.label}</div></div>
+      <div class="compare-card shop"><div class="src-name">Shopify</div><div class="v">${r.shop.value}</div><div class="desc">${r.shop.label}</div></div>
+    </div>
+    <div class="gap-card">
+      <div><div class="gap-lbl">Difference</div><div class="gap-num">${r.gap}</div></div>
+      <button class="toggle-reasons" onclick="document.getElementById('reason-list').style.display=document.getElementById('reason-list').style.display==='none'?'block':'none'">Show reasons<svg><use href="#i-arrow-down"/></svg></button>
+    </div>
+    <div id="reason-list">
+      <span class="lbl">Most likely reasons</span>
+      ${r.reasons.map((rs,i)=>`<div class="reason-row"><div class="reason-num">${i+1}</div><div class="reason-text">${rs}</div></div>`).join("")}
+    </div>
+    <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap">
+      <span class="recipe-actions act">Attribution logic</span>
+      <span class="recipe-actions act">Included orders</span>
+      <span class="recipe-actions act">Excluded orders</span>
+      <span class="recipe-actions act">Ask AI to explain</span>
+    </div>`;
+  drawer.classList.add("show");
+  drawerBg.classList.add("show");
+}
+function closeDrawer(){ drawer.classList.remove("show"); drawerBg.classList.remove("show"); }
+
+/* ============================================================
+   Charts
+   ============================================================ */
+function buildChart(containerId, xId, data, dates, color){
+  const chart = document.getElementById(containerId); if(!chart) return;
+  data.forEach((v,i)=>{
+    const wrap = document.createElement("div"); wrap.className = "chart-bar-wrap";
+    const bar = document.createElement("div"); bar.className = "chart-bar";
+    bar.style.height = (v*100)+"%";
+    if(color) bar.style.background = color;
+    wrap.appendChild(bar);
+    wrap.addEventListener("click", ()=>{
+      document.querySelectorAll("#"+containerId+" .chart-bar-wrap").forEach(w=>w.classList.remove("selected"));
+      wrap.classList.add("selected");
+      const me = document.getElementById("mark-explainer");
+      if(me && containerId==="chart"){
+        me.style.display="block";
+        document.getElementById("me-date").textContent = dates[i] + ", 2026";
+        document.getElementById("me-val").textContent = (v*100).toFixed(2)+"%";
+      }
+    });
+    chart.appendChild(wrap);
+  });
+  const xa = document.getElementById(xId);
+  if(xa) xa.innerHTML = ["Apr 02","Apr 04","Apr 06","Apr 08","Apr 10","Apr 12","Apr 14","Apr 16"].map(d=>`<span>${d}</span>`).join("");
+}
+const chartData = [0.6,0.7,0.5,0.65,0.75,0.7,0.8,0.6,0.5,0.55,0.7,0.85,0.9,0.75,0.8,0.85];
+const fullDates = chartData.map((_,i)=>"Apr "+String(2+i).padStart(2,"0"));
+buildChart("chart","chart-x", chartData, fullDates);
+
+const abuseData = [0.05,0.04,0.03,0.05,0.04,0.03,0.04,0.05,0.04,0.03,0.04,0.05,0.04,0.03,0.04,0.05];
+buildChart("chart-2","chart-x-2", abuseData, fullDates, "var(--chart-pink)");
+</script>
+</body>
+</html>
