@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Metric Catalog · Mailchimp</title>
+<style>
+  :root{
+    --mc-yellow:#FFE01B; --peppercorn:#241C15; --teal:#007C89; --teal-dark:#005f69;
+    --teal-tint:#E6F2F3; --teal-tint-2:#F2F8F8;
+    --text:#241C15; --text-2:#6A737C; --text-3:#999D9F;
+    --border:#E8EAED; --border-2:#D5D8DC; --bg:#FFFFFF; --bg-soft:#F6F6F4;
+    --success-bg:#D1E9CE; --success-fg:#007A3D;
+    --warning-bg:#FADCD4; --warning-fg:#C83B27;
+    --info-bg:#D9ECFA; --info-fg:#0F4F8A;
+    --modeled-bg:#EEE6FB; --modeled-fg:#5B3FA9;
+    --delayed-bg:#FFF4D6; --delayed-fg:#7A5A00;
+    --partial-bg:#FFE5D0; --partial-fg:#A24A00;
+    --neutral-bg:#EEF0F2; --neutral-fg:#4A5560;
+  }
+  *{box-sizing:border-box;font-family:"Helvetica Neue","Helvetica","Arial",sans-serif!important}
+  html,body{margin:0;padding:0;background:#fff;color:var(--text);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--teal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  svg{display:block}
+
+  .app{display:flex;min-height:100vh}
+  .sidebar{width:240px;background:#fff;border-right:1px solid var(--border);flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+  .yellow-bar{height:6px;background:var(--mc-yellow)}
+  .logo-wrap{padding:14px 20px 8px}
+  .freddie-circle{width:42px;height:42px;background:var(--peppercorn);border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .freddie-circle svg{width:30px;height:30px}
+  .nav-create{margin:14px 16px 16px;padding:8px 14px;border:1px solid var(--peppercorn);border-radius:4px;background:#fff;color:var(--peppercorn);font-weight:500;display:flex;align-items:center;gap:8px;font-size:13px;width:calc(100% - 32px)}
+  .nav-create svg{width:14px;height:14px}
+  .nav{padding:0 8px;flex:1}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:4px;color:var(--peppercorn);cursor:pointer;font-size:13px;text-decoration:none}
+  .nav-item:hover{background:var(--bg-soft);text-decoration:none}
+  .nav-item.active{background:#fff;color:var(--teal);font-weight:500;box-shadow:inset 3px 0 0 var(--teal);padding-left:9px}
+  .nav-item svg{width:16px;height:16px;color:var(--text-2)}
+  .nav-item.active svg{color:var(--teal)}
+  .badge-new{background:var(--teal-tint);color:var(--teal);font-size:10px;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:600}
+
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;overflow-x:hidden}
+  .topbar{height:48px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10;gap:24px}
+  .search{flex:1;max-width:560px;height:30px;border:1px solid var(--border);border-radius:4px;padding:0 12px;background:#fff;display:flex;align-items:center;gap:8px;color:var(--text-3)}
+  .search svg{width:14px;height:14px;color:var(--text-3)}
+  .search input{flex:1;border:none;outline:none;background:transparent;font-size:13px;color:var(--text)}
+  .topbar-right{display:flex;align-items:center;gap:18px;font-size:13px}
+  .topbar-icon{width:18px;height:18px;color:var(--text-2);cursor:pointer}
+  .live-help{color:var(--success-fg);font-size:12px;display:inline-flex;align-items:center;gap:6px;font-weight:500;border:1px solid var(--success-bg);background:#F2FAF3;border-radius:999px;padding:3px 10px}
+  .live-help::before{content:"";width:8px;height:8px;background:var(--success-fg);border-radius:50%}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px}
+
+  .page{padding:18px 28px 56px;width:100%}
+
+  .page-bar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:24px;flex-wrap:wrap}
+  .page-title{font-size:24px;font-weight:600;margin:0 0 4px;color:var(--text);letter-spacing:-.2px}
+  .page-sub{font-size:13px;color:var(--text-2);margin:0;max-width:720px;line-height:1.5}
+
+  .stat-strip{display:flex;gap:18px;margin:18px 0 14px;flex-wrap:wrap}
+  .stat-pill{background:var(--bg-soft);border:1px solid var(--border);border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+  .stat-pill .num{font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.2px}
+  .stat-pill .lbl{font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+
+  .controls{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+  .filter-search{flex:1;min-width:240px;max-width:380px;height:34px;border:1px solid var(--border-2);border-radius:4px;padding:0 12px;background:#fff;display:flex;align-items:center;gap:8px;color:var(--text-3)}
+  .filter-search svg{width:14px;height:14px}
+  .filter-search input{flex:1;border:none;outline:none;background:transparent;font-size:13px;color:var(--text)}
+  .filter-group{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)}
+  .chip{font-size:12px;padding:5px 10px;border:1px solid var(--border-2);border-radius:999px;background:#fff;color:var(--text);cursor:pointer;font-weight:500}
+  .chip:hover{background:var(--bg-soft)}
+  .chip.active{background:var(--peppercorn);color:#fff;border-color:var(--peppercorn)}
+  .count-pill{font-size:12px;color:var(--text-2);font-weight:500;margin-left:auto}
+
+  /* Catalog table */
+  .table-wrap{border:1px solid var(--border);border-radius:6px;overflow:hidden;background:#fff}
+  table.cat{width:100%;border-collapse:collapse;table-layout:fixed}
+  table.cat thead th{font-size:11px;font-weight:600;color:var(--text-2);text-align:left;padding:10px 12px;background:var(--bg-soft);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0;z-index:5}
+  table.cat tbody td{padding:14px 12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px;color:var(--text);line-height:1.5}
+  table.cat tbody tr:last-child td{border-bottom:none}
+  table.cat tbody tr:hover{background:var(--bg-soft)}
+
+  /* Column widths */
+  .col-num{width:40px}
+  .col-name{width:170px}
+  .col-where{width:140px}
+  .col-badge{width:140px}
+  .col-def{width:240px}
+  .col-formula{width:200px}
+  .col-sources{width:170px}
+  .col-lineage{width:180px}
+  .col-settings{width:160px}
+  .col-fresh{width:120px}
+  .col-issues{width:170px}
+  .col-change{width:130px}
+
+  .num-cell{font-size:11px;color:var(--text-3);font-weight:500;text-align:right;padding-right:10px;font-variant-numeric:tabular-nums}
+  .metric-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.3}
+  .metric-key{font-size:10px;color:var(--text-3);font-family:"SF Mono",Monaco,Consolas,monospace!important;background:var(--bg-soft);padding:1px 6px;border-radius:3px;display:inline-block}
+
+  .where-tag{display:inline-flex;align-items:center;font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;background:var(--bg-soft);border:1px solid var(--border-2);color:var(--text);margin:0 3px 3px 0;letter-spacing:.2px}
+
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:3px;letter-spacing:.2px;line-height:1.6;border:1px solid transparent}
+  .badge.official{background:var(--success-bg);color:var(--success-fg)}
+  .badge.modeled{background:var(--modeled-bg);color:var(--modeled-fg)}
+  .badge.delayed{background:var(--delayed-bg);color:var(--delayed-fg)}
+  .badge.partial{background:var(--partial-bg);color:var(--partial-fg)}
+  .badge.differs{background:var(--info-bg);color:var(--info-fg)}
+
+  .formula-mono{font-family:"SF Mono",Monaco,Consolas,monospace!important;font-size:11px;color:var(--teal);background:var(--bg-soft);padding:6px 8px;border-radius:3px;display:inline-block;line-height:1.5;word-break:break-word;border:1px solid var(--border)}
+
+  .src-list{display:flex;flex-direction:column;gap:4px}
+  .src-item{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:var(--text)}
+  .src-icon{width:16px;height:16px;border-radius:2px;background:#fff;border:1px solid var(--border-2);display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;font-weight:700;color:var(--text)}
+
+  .lineage-list{font-size:11px;color:var(--text);line-height:1.5}
+  .lineage-list ol{margin:0;padding-left:18px}
+  .lineage-list li{margin-bottom:2px}
+
+  .settings-list{display:flex;flex-direction:column;gap:3px}
+  .settings-pill-sm{font-size:10px;color:var(--text);background:#fff;border:1px solid var(--border-2);border-radius:999px;padding:1px 7px;display:inline-block;font-weight:500;width:fit-content}
+
+  .fresh-cell{font-size:11px;color:var(--text)}
+  .fresh-cell .stat-row{display:flex;align-items:center;gap:5px;margin-bottom:2px}
+  .fresh-cell .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+  .fresh-cell .dot.green{background:var(--success-fg)}
+  .fresh-cell .dot.amber{background:var(--delayed-fg)}
+  .fresh-cell .meta{color:var(--text-2);font-size:10px}
+
+  .issues-cell{font-size:11px;color:var(--text)}
+  .issues-cell.green{color:var(--success-fg);font-weight:500}
+  .issues-cell.amber{color:var(--delayed-fg);font-weight:500}
+
+  .change-cell{font-size:11px;color:var(--text-2);line-height:1.4}
+  .change-cell .date{color:var(--text);font-weight:500;display:block;margin-bottom:2px}
+
+  .empty-state{padding:60px 20px;text-align:center;color:var(--text-2);font-size:13px}
+
+  /* Mobile / narrow viewport */
+  @media (max-width: 1400px){
+    .page{padding:18px 14px 56px}
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M10.5 10.5L14 14"/></symbol>
+<symbol id="i-edit" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M11.5 2.5l2 2L6 12l-3 1 1-3z"/></symbol>
+<symbol id="i-people" viewBox="0 0 16 16"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 14c0-2.5 2-4 4-4s4 1.5 4 4"/><circle cx="11" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M9 13c0-1.7 1.3-3 3-3s3 1.3 3 3"/></symbol>
+<symbol id="n-home" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 7l6-5 6 5v7H2zM6 14V9h4v5"/></symbol>
+<symbol id="n-camp" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 5l6 4 6-4"/></symbol>
+<symbol id="n-auto" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M9 2L4 9h4l-1 5 5-7H8z"/></symbol>
+<symbol id="n-sms" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M3 4h10v7H6l-3 3z"/></symbol>
+<symbol id="n-form" viewBox="0 0 16 16"><rect x="3" y="2" width="10" height="12" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M5 5h6M5 8h6M5 11h4"/></symbol>
+<symbol id="n-aud" viewBox="0 0 16 16"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 14c0-2.5 2-4 4-4s4 1.5 4 4"/><circle cx="11" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M9 13c0-1.7 1.3-3 3-3s3 1.3 3 3"/></symbol>
+<symbol id="n-anal" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 14V6M6 14V2M10 14V8M14 14v-5"/></symbol>
+<symbol id="n-cat" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="2" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="7" width="12" height="2" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="11" width="12" height="2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+<aside class="sidebar">
+  <div class="yellow-bar"></div>
+  <div class="logo-wrap">
+    <div class="freddie-circle">
+      <svg viewBox="0 0 24 24"><path fill="#FFE01B" d="M11.267 0C6.791-.015-1.82 10.246 1.397 12.964l.79.669a3.88 3.88 0 0 0-.22 1.792c.084.84.518 1.644 1.22 2.266.666.59 1.542.964 2.392.964 1.406 3.24 4.62 5.228 8.386 5.34 4.04.12 7.433-1.776 8.854-5.182.093-.24.488-1.316.488-2.267 0-.956-.54-1.352-.885-1.352-.01-.037-.078-.286-.172-.586-.093-.3-.19-.51-.19-.51.375-.563.382-1.065.332-1.35-.053-.353-.2-.653-.496-.964-.296-.311-.902-.63-1.753-.868l-.446-.124c-.002-.019-.024-1.053-.043-1.497-.014-.32-.042-.822-.197-1.315-.186-.668-.508-1.253-.911-1.627 1.112-1.152 1.806-2.422 1.804-3.511-.003-2.095-2.576-2.729-5.746-1.416l-.672.285A678.22 678.22 0 0 0 12.7.504C12.304.159 11.817.002 11.267 0z"/></svg>
+    </div>
+  </div>
+  <button class="nav-create"><svg><use href="#i-edit"/></svg>Create</button>
+  <nav class="nav">
+    <a class="nav-item" href="index.html"><svg><use href="#n-home"/></svg>Home</a>
+    <a class="nav-item" href="campaigns.html"><svg><use href="#n-camp"/></svg>Campaigns</a>
+    <a class="nav-item" href="automations.html"><svg><use href="#n-auto"/></svg>Automations</a>
+    <a class="nav-item" href="sms.html"><svg><use href="#n-sms"/></svg>SMS</a>
+    <a class="nav-item" href="forms.html"><svg><use href="#n-form"/></svg>Forms<span class="badge-new">New</span></a>
+    <a class="nav-item" href="audience-analytics.html"><svg><use href="#n-aud"/></svg>Audience</a>
+    <a class="nav-item" href="analytics.html"><svg><use href="#n-anal"/></svg>Analytics</a>
+    <a class="nav-item active" href="catalog.html"><svg><use href="#n-cat"/></svg>Metric Catalog</a>
+  </nav>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div></div>
+    <div class="search"><svg><use href="#i-search"/></svg><input placeholder="Search…"/></div>
+    <div class="topbar-right">
+      <svg class="topbar-icon"><use href="#i-people"/></svg>
+      <span class="live-help">Live expert help</span>
+      <div class="avatar">D</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-bar">
+      <div>
+        <h1 class="page-title">Metric Catalog</h1>
+        <p class="page-sub">Every metric reported across the Mailchimp dashboard with its full transparency profile — definition, formula, lineage, sources, trust state, and known issues. One row per metric, all attributes side-by-side.</p>
+      </div>
+    </div>
+
+    <div class="stat-strip" id="stat-strip"></div>
+
+    <div class="controls">
+      <div class="filter-search">
+        <svg><use href="#i-search"/></svg>
+        <input id="search-input" placeholder="Search metric, formula, source…"/>
+      </div>
+      <div class="filter-group">
+        Type:
+        <span class="chip active" data-filter="all">All</span>
+        <span class="chip" data-filter="official">Official</span>
+        <span class="chip" data-filter="modeled">Modeled</span>
+        <span class="chip" data-filter="differs">Differs</span>
+        <span class="chip" data-filter="partial">Partial</span>
+        <span class="chip" data-filter="delayed">Delayed</span>
+      </div>
+      <span class="count-pill" id="count-pill"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="cat">
+        <thead>
+          <tr>
+            <th class="col-num">#</th>
+            <th class="col-name">Metric</th>
+            <th class="col-where">Surfaces</th>
+            <th class="col-badge">Trust badge</th>
+            <th class="col-def">Definition</th>
+            <th class="col-formula">Formula</th>
+            <th class="col-sources">Sources</th>
+            <th class="col-lineage">Lineage steps</th>
+            <th class="col-settings">Settings</th>
+            <th class="col-fresh">Freshness</th>
+            <th class="col-issues">Known issues</th>
+            <th class="col-change">Last change</th>
+          </tr>
+        </thead>
+        <tbody id="cat-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ============================================================
+   METRIC CATALOG — single source of truth, all metrics across
+   all 8 dashboard pages with full transparency attributes
+   ============================================================ */
+const CATALOG = [
+  // ─── Home + Marketing dashboard ────────────────────────────
+  {key:"totalsends", name:"Total sends", surfaces:["Home"], badge:{l:"Official",cls:"official"},
+    def:"Total number of email or SMS messages dispatched in this period.",
+    formula:"Sum of recipient_count per send",
+    sources:[{i:"M",n:"Mailchimp send infrastructure"}],
+    lineage:["Campaign or automation triggered","Send queue processed","Send-attempts counted"],
+    settings:["Channel: Email + SMS","Timezone: Account"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"deliveryrate", name:"Delivery rate", surfaces:["Home"], badge:{l:"Official",cls:"official"},
+    def:"Percentage of sent messages accepted by recipient mail servers.",
+    formula:"Delivered ÷ Sent",
+    sources:[{i:"M",n:"Mailchimp send infrastructure"},{i:"B",n:"Bounce classifier v2.1"}],
+    lineage:["Sent","Bounces deducted","Delivered","Rate computed"],
+    settings:["Bounce classification: v2.1","Auto-clean hard bounces: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"Jan 2026 — bounce classification v2.1"},
+  {key:"openrate", name:"Open rate", surfaces:["Home","Campaign Manager","Campaigns"], badge:{l:"Modeled",cls:"modeled"},
+    def:"Percentage of delivered emails opened by the recipient at least once.",
+    formula:"Unique Openers ÷ Delivered",
+    sources:[{i:"M",n:"Mailchimp campaign engagement"},{i:"B",n:"Bot filter v3.2 (MPP detection)"}],
+    lineage:["Delivered","Pixel loaded","Bot filter applied","Open recorded","Rate computed"],
+    settings:["Bot filter: On","MPP filter: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"amber",text:"Apple MPP may inflate by ~5-10%"},
+    change:"Apr 2026 — bot filter v3.2"},
+  {key:"clickrate", name:"Click rate", surfaces:["Home","Campaign Manager","Analytics","Campaigns"], badge:{l:"Official",cls:"official"},
+    def:"Percentage of delivered emails where the recipient clicked any tracked link.",
+    formula:"Unique Clickers ÷ Delivered",
+    sources:[{i:"M",n:"Mailchimp link redirect tracker"},{i:"B",n:"Bot filter v3.2"}],
+    lineage:["Delivered","Recipient clicks tracked link","Bot filter applied","Click counted","Rate computed"],
+    settings:["Bot filter: On","Track all links: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"Sep 2025 — bot filter v3.0"},
+  {key:"orderrate", name:"Order rate", surfaces:["Home","Campaign Manager"], badge:{l:"Differs from Shopify",cls:"differs"},
+    def:"Percentage of delivered emails resulting in an attributed order within the 5-day click window.",
+    formula:"Attributed Orders ÷ Delivered",
+    sources:[{i:"S",n:"Shopify order events"},{i:"A",n:"Attribution engine v2.4"}],
+    lineage:["Delivered","Recipient clicked","Order placed in Shopify","Attribution match"],
+    settings:["Attribution: 5-day click"],
+    freshness:{updated:"38m ago",status:"amber",processing:"98% complete"},
+    issues:{status:"amber",text:"Shopify order sync running behind"},
+    change:"Apr 2026 — attribution engine v2.4"},
+  {key:"unsubrate", name:"Unsubscribe rate", surfaces:["Home","Campaign Manager"], badge:{l:"Official",cls:"official"},
+    def:"Percentage of delivered emails that resulted in an unsubscribe.",
+    formula:"Unsubscribes ÷ Delivered",
+    sources:[{i:"M",n:"Mailchimp unsubscribe link"},{i:"L",n:"List-Unsubscribe header (RFC 8058)"}],
+    lineage:["Recipient clicks unsubscribe","Mailchimp records","Subscriber removed","Rate computed"],
+    settings:["One-click unsubscribe: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"Feb 2026 — RFC 8058 one-click added"},
+  {key:"totalcontacts", name:"Total contacts", surfaces:["Home","Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Everyone in your audience including subscribed, non-subscribed, and unsubscribed contacts.",
+    formula:"Count(distinct contact_id WHERE not archived)",
+    sources:[{i:"M",n:"Mailchimp audience database"}],
+    lineage:["Contact added","Identity dedup","Archive filter","Total counted"],
+    settings:["Includes: Sub + Non-sub + Unsub","Excludes: Archived"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"netgrowth", name:"Net subscriber growth", surfaces:["Home"], badge:{l:"Official",cls:"official"},
+    def:"New subscribers added minus subscribers lost in this period.",
+    formula:"New subs − (Unsubs + Hard bounces + Complaints)",
+    sources:[{i:"M",n:"Mailchimp audience database"},{i:"B",n:"Signup protection filter"}],
+    lineage:["New subscribers","Bot filter","Losses subtracted","Net growth"],
+    settings:["Signup protection: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"emailsubs", name:"Email subscribers", surfaces:["Home","Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Contacts opted in to receive email from you.",
+    formula:"Count(contacts WHERE email_status = 'subscribed')",
+    sources:[{i:"M",n:"Mailchimp audience database"}],
+    lineage:["Contact opts in","Confirmation if needed","Email subscribed","Counted"],
+    settings:["Double opt-in: Per form"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"smssubs", name:"SMS subscribers", surfaces:["Home","SMS","Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Contacts opted in to receive SMS messages.",
+    formula:"Count(contacts WHERE sms_status = 'subscribed')",
+    sources:[{i:"M",n:"Mailchimp audience database"},{i:"C",n:"SMS consent registry"}],
+    lineage:["Phone provided","TCPA consent","SMS subscribed","Counted"],
+    settings:["TCPA consent: Required"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"recipients", name:"Recipients (per campaign)", surfaces:["Home"], badge:{l:"Official",cls:"official"},
+    def:"Number of contacts who received this campaign.",
+    formula:"Count(contacts targeted − suppressed at send)",
+    sources:[{i:"M",n:"Mailchimp send infrastructure"}],
+    lineage:["Audience selected","Suppression applied","Sent"],
+    settings:["Suppression: Active"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"campaignrev", name:"Revenue (per campaign)", surfaces:["Home","Campaigns"], badge:{l:"Differs from Shopify",cls:"differs"},
+    def:"Revenue attributed to a specific campaign within the 5-day click window.",
+    formula:"Σ (Attributed Orders × Order Value) for this campaign",
+    sources:[{i:"S",n:"Shopify order events"},{i:"A",n:"Attribution engine v2.4"}],
+    lineage:["Sent","Clicked","Order placed","Attribution match","Revenue attributed"],
+    settings:["Attribution: 5-day click"],
+    freshness:{updated:"38m ago",status:"amber",processing:"98% complete"},
+    issues:{status:"amber",text:"Shopify sync delayed"},
+    change:"Apr 2026"},
+
+  // ─── Marketing dashboard (analytics.html) ─────────────────
+  {key:"revenue", name:"Revenue (Attributed)", surfaces:["Marketing dashboard"], badge:{l:"Differs from Shopify",cls:"differs"},
+    def:"Revenue from orders attributed to your campaigns within the 5-day click window.",
+    formula:"Σ (Attributed Orders × Order Value)",
+    sources:[{i:"S",n:"Shopify order events"},{i:"M",n:"Mailchimp campaign engagement"},{i:"A",n:"Attribution engine v2.4"}],
+    lineage:["Sent","Clicked","Visited store","Order placed","Webhook received","Attribution match","Revenue attributed"],
+    settings:["Attribution: 5-day click","Bot filter: On"],
+    freshness:{updated:"38m ago",status:"amber",processing:"98% complete"},
+    issues:{status:"amber",text:"Shopify order sync running behind"},
+    change:"Apr 2026 — attribution engine v2.4"},
+  {key:"aor", name:"Average order revenue", surfaces:["Marketing dashboard"], badge:{l:"Differs from Shopify",cls:"differs"},
+    def:"Average revenue per attributed order in the period.",
+    formula:"Attributed Revenue ÷ Attributed Orders",
+    sources:[{i:"S",n:"Shopify order events"},{i:"A",n:"Attribution engine v2.4"}],
+    lineage:["Attributed orders","Sum of order values","Divide by order count"],
+    settings:["Attribution: 5-day click"],
+    freshness:{updated:"38m ago",status:"amber",processing:"98% complete"},
+    issues:{status:"amber",text:"Shopify sync delayed"},
+    change:"Apr 2026"},
+  {key:"orders", name:"Orders (Attributed)", surfaces:["Marketing dashboard"], badge:{l:"Differs from Shopify",cls:"differs"},
+    def:"Orders attributed to your campaigns within the 5-day click window.",
+    formula:"Count(Orders WHERE matched_campaign_click_within_5d)",
+    sources:[{i:"S",n:"Shopify order events"},{i:"A",n:"Attribution engine v2.4"}],
+    lineage:["Sent","Clicked","Order in Shopify","Webhook received","Attribution match","Counted"],
+    settings:["Attribution: 5-day click"],
+    freshness:{updated:"38m ago",status:"amber",processing:"98% complete"},
+    issues:{status:"amber",text:"Shopify order sync running behind"},
+    change:"Apr 2026 — attribution engine v2.4"},
+  {key:"opens", name:"Opened (count)", surfaces:["Marketing dashboard","Campaigns"], badge:{l:"Modeled",cls:"modeled"},
+    def:"Recipients who opened your email at least once.",
+    formula:"Unique Openers (per period)",
+    sources:[{i:"M",n:"Mailchimp campaign engagement"},{i:"B",n:"Bot filter v3.2"}],
+    lineage:["Sent","Delivered","Pixel loaded","Bot filter","Open recorded"],
+    settings:["Bot filter: On","MPP filter: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"amber",text:"Some MPP opens may slip through"},
+    change:"Apr 2026 — bot filter v3.2"},
+  {key:"clicks", name:"Clicked (count)", surfaces:["Marketing dashboard","Campaigns"], badge:{l:"Official",cls:"official"},
+    def:"Unique recipients who clicked any tracked link.",
+    formula:"Unique Clickers (per period)",
+    sources:[{i:"M",n:"Mailchimp link redirect tracker"},{i:"B",n:"Bot filter v3.2"}],
+    lineage:["Delivered","Opened","Clicked","Bot filter","Click counted"],
+    settings:["Bot filter: On","Track all links: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"Sep 2025"},
+  {key:"deliveries", name:"Deliveries", surfaces:["Marketing dashboard"], badge:{l:"Official",cls:"official"},
+    def:"Messages successfully delivered to a recipient inbox.",
+    formula:"Sent − (Hard bounces + Soft bounces + Rejected)",
+    sources:[{i:"M",n:"Mailchimp send infrastructure"}],
+    lineage:["Campaign queued","SMTP send","Bounce response","Delivered"],
+    settings:["Bounce classification: v2.1"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"Jan 2026"},
+  {key:"revpr", name:"Revenue per recipient", surfaces:["Marketing dashboard"], badge:{l:"Differs from Shopify",cls:"differs"},
+    def:"Attributed revenue divided by total recipients reached.",
+    formula:"Attributed Revenue ÷ Total Recipients",
+    sources:[{i:"S",n:"Shopify order events"},{i:"M",n:"Mailchimp campaign engagement"}],
+    lineage:["Recipients reached","Attributed revenue","Divide"],
+    settings:["Attribution: 5-day click"],
+    freshness:{updated:"38m ago",status:"amber",processing:"98% complete"},
+    issues:{status:"amber",text:"Shopify sync delayed"},
+    change:"Apr 2026"},
+  {key:"abuserate", name:"Abuse report rate", surfaces:["Marketing dashboard"], badge:{l:"Official",cls:"official"},
+    def:"Percentage of recipients who marked your email as spam.",
+    formula:"Abuse Reports ÷ Delivered",
+    sources:[{i:"I",n:"ISP feedback loops"},{i:"M",n:"Mailchimp deliverability"}],
+    lineage:["Delivered","Recipient marks spam","FBL reports back","Rate computed"],
+    settings:["Feedback loop: All major ISPs"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"emailssent", name:"Emails sent", surfaces:["Marketing dashboard"], badge:{l:"Official",cls:"official"},
+    def:"Total emails attempted in this period.",
+    formula:"Σ send_attempts per campaign",
+    sources:[{i:"M",n:"Mailchimp send infrastructure"}],
+    lineage:["Campaigns scheduled","Send queue","Attempts counted"],
+    settings:["Channel: Email"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"bounces", name:"Bounces", surfaces:["Marketing dashboard"], badge:{l:"Official",cls:"official"},
+    def:"Emails that couldn't be delivered.",
+    formula:"Hard bounces + Soft bounces",
+    sources:[{i:"M",n:"Mailchimp send infrastructure"},{i:"B",n:"Bounce classifier v2.1"}],
+    lineage:["SMTP attempt","Recipient server response","Classified","Hard auto-cleaned"],
+    settings:["Auto-clean hard bounces: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"Jan 2026 — bounce classification v2.1"},
+  {key:"unsub", name:"Unsubscribed", surfaces:["Marketing dashboard"], badge:{l:"Official",cls:"official"},
+    def:"Recipients who clicked unsubscribe in this period.",
+    formula:"Count(unique unsubscribers in period)",
+    sources:[{i:"M",n:"Mailchimp unsubscribe link"},{i:"L",n:"List-Unsubscribe header"}],
+    lineage:["Recipient clicks unsub","Mailchimp records","Removed from active","Counted"],
+    settings:["One-click unsubscribe: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"Feb 2026 — RFC 8058 one-click added"},
+  {key:"abusereports", name:"Abuse reports", surfaces:["Marketing dashboard"], badge:{l:"Official",cls:"official"},
+    def:"Number of recipients who marked your email as spam.",
+    formula:"Count(abuse_reports in period)",
+    sources:[{i:"I",n:"ISP feedback loops"}],
+    lineage:["Delivered","Marked spam in client","FBL report","Recorded"],
+    settings:["Feedback loop: All major ISPs"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"totalcount", name:"Total message count", surfaces:["Marketing dashboard"], badge:{l:"Official",cls:"official"},
+    def:"Number of unique sends in this period across selected channels.",
+    formula:"Count(distinct send_id in period)",
+    sources:[{i:"M",n:"Mailchimp send infrastructure"}],
+    lineage:["Campaign or automation","Send completed","Counted"],
+    settings:["Channel: Email + SMS"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"totalsent", name:"Total messages sent (count)", surfaces:["Marketing dashboard"], badge:{l:"Official",cls:"official"},
+    def:"Total recipients reached across all sends in the period.",
+    formula:"Σ recipient_count per send",
+    sources:[{i:"M",n:"Mailchimp send infrastructure"}],
+    lineage:["Sends in period","Sum of recipients"],
+    settings:["Channel: Email + SMS"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+
+  // ─── Campaign Manager ─────────────────────────────────────
+  {key:"sdo", name:"Send day optimization", surfaces:["Campaign Manager"], badge:{l:"Modeled",cls:"modeled"},
+    def:"Suggested send-quality rating per day based on your audience's historical engagement.",
+    formula:"Bayesian model on (open + click + conversion) by day-of-week",
+    sources:[{i:"M",n:"Mailchimp campaign engagement"},{i:"O",n:"Send day optimizer v1.4"}],
+    lineage:["Engagement collected (90d)","Day aggregated","Bayesian smoothing","Quality rating"],
+    settings:["Lookback: 90 days","Recompute: Weekly"],
+    freshness:{updated:"3 days ago",status:"green",processing:"Complete"},
+    issues:{status:"amber",text:"Low confidence with <2k engaged"},
+    change:"Mar 2026"},
+
+  // ─── Automations ──────────────────────────────────────────
+  {key:"started", name:"Started (Automation)", surfaces:["Automations","Campaigns"], badge:{l:"Official",cls:"official"},
+    def:"Number of contacts who entered this automation flow.",
+    formula:"Count(distinct contacts WHERE entered_automation)",
+    sources:[{i:"M",n:"Mailchimp automation engine"}],
+    lineage:["Trigger met","Eligibility checks","Automation entered","Counted"],
+    settings:["Re-entry: Per automation","Suppression: Active"],
+    freshness:{updated:"5m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"inprogress", name:"In Progress (Automation)", surfaces:["Automations","Campaigns"], badge:{l:"Official",cls:"official"},
+    def:"Contacts who entered but haven't completed all steps yet.",
+    formula:"Started − Completed − Exited (mid-flow)",
+    sources:[{i:"M",n:"Mailchimp automation engine"}],
+    lineage:["Entered automation","Step delay","Pending next step","Counted"],
+    settings:["Delay handling: Per automation"],
+    freshness:{updated:"5m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"completed", name:"Completed (Automation)", surfaces:["Automations","Campaigns"], badge:{l:"Official",cls:"official"},
+    def:"Contacts who finished every step in this automation.",
+    formula:"Count(contacts WHERE reached_final_step OR completion_exit)",
+    sources:[{i:"M",n:"Mailchimp automation engine"}],
+    lineage:["Entered","All steps executed","Final state","Counted"],
+    settings:["Completion rule: Per automation"],
+    freshness:{updated:"5m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+
+  // ─── SMS ──────────────────────────────────────────────────
+  {key:"smssent", name:"SMS Sent", surfaces:["SMS"], badge:{l:"Official",cls:"official"},
+    def:"Total SMS messages sent across campaigns and automations.",
+    formula:"Sum of SMS dispatch attempts",
+    sources:[{i:"M",n:"Mailchimp SMS infrastructure"},{i:"T",n:"SMS aggregator (Twilio)"}],
+    lineage:["Campaign triggered","Gateway dispatch","Counted"],
+    settings:["Quiet hours: 9pm-8am local","Credit pool: 1000/mo"],
+    freshness:{updated:"8m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"smsdelivery", name:"SMS Delivery rate", surfaces:["SMS"], badge:{l:"Official",cls:"official"},
+    def:"Percentage of sent SMS confirmed delivered by carrier.",
+    formula:"DLR-confirmed Deliveries ÷ Sent",
+    sources:[{i:"T",n:"SMS aggregator DLR"},{i:"C",n:"Carrier feedback"}],
+    lineage:["Dispatched","Carrier accepts","DLR returned","Rate computed"],
+    settings:["DLR timeout: 24h"],
+    freshness:{updated:"8m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"smsclick", name:"SMS Click rate", surfaces:["SMS"], badge:{l:"Official",cls:"official"},
+    def:"Percentage of delivered SMS where recipient clicked a tracked link.",
+    formula:"Unique Clickers ÷ Delivered",
+    sources:[{i:"M",n:"Mailchimp SMS short URL service"}],
+    lineage:["Delivered","Recipient taps link","Click counted"],
+    settings:["URL shortener: On"],
+    freshness:{updated:"8m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"smsunsub", name:"SMS Unsubscribed", surfaces:["SMS","Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Contacts who replied STOP or otherwise opted out of SMS.",
+    formula:"Count(unique unsubscribers in period)",
+    sources:[{i:"T",n:"SMS aggregator (Twilio)"}],
+    lineage:["STOP keyword","Carrier reports","Mailchimp suppresses","Counted"],
+    settings:["STOP keywords: STOP, UNSUBSCRIBE, CANCEL, END, QUIT"],
+    freshness:{updated:"8m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"smsrev", name:"SMS Revenue (Stripe)", surfaces:["SMS"], badge:{l:"Differs from Shopify",cls:"differs"},
+    def:"Revenue attributed to SMS clicks, sourced from Stripe payment events.",
+    formula:"Σ Stripe charges WHERE attributed to SMS click",
+    sources:[{i:"S",n:"Stripe payment events"},{i:"M",n:"Mailchimp SMS click tracker"}],
+    lineage:["SMS delivered","Recipient clicks","Stripe payment","Attribution match","Revenue attributed"],
+    settings:["Attribution window: 5-day click"],
+    freshness:{updated:"38m ago",status:"amber",processing:"98% complete"},
+    issues:{status:"amber",text:"Stripe webhook lag detected"},
+    change:"Apr 2026"},
+  {key:"smscontacts", name:"SMS contacts", surfaces:["Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Total SMS contacts (both subscribed and unsubscribed).",
+    formula:"Count(contacts WHERE has_sms_phone)",
+    sources:[{i:"M",n:"Mailchimp audience database"}],
+    lineage:["Phone provided","Validated (E.164)","Counted"],
+    settings:["Phone format: E.164"],
+    freshness:{updated:"8m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+
+  // ─── Forms (Popup) ────────────────────────────────────────
+  {key:"visitors", name:"Site visitors", surfaces:["Popup Forms"], badge:{l:"Official",cls:"official"},
+    def:"Unique visitors to pages where popup forms can appear.",
+    formula:"Count(distinct session_id WHERE on_form_eligible_page)",
+    sources:[{i:"M",n:"Mailchimp site tracker"},{i:"B",n:"Bot filter v3.2"}],
+    lineage:["Visitor lands","Pixel fires","Bot filter","Counted"],
+    settings:["Bot filter: On","Tracking: Mailchimp.js"],
+    freshness:{updated:"6m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"impressions", name:"Unique impressions", surfaces:["Popup Forms"], badge:{l:"Official",cls:"official"},
+    def:"Unique visitors who saw a popup form.",
+    formula:"Count(distinct session_id WHERE saw_popup)",
+    sources:[{i:"M",n:"Mailchimp site tracker"}],
+    lineage:["Visitor on site","Trigger condition met","Popup rendered","Counted"],
+    settings:["Bot filter: On","Frequency cap: Per session"],
+    freshness:{updated:"6m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"emailoptin", name:"Email opt-in rate", surfaces:["Popup Forms"], badge:{l:"Official",cls:"official"},
+    def:"Percentage of unique impressions that resulted in an email submission.",
+    formula:"Email Captures ÷ Unique Impressions",
+    sources:[{i:"M",n:"Mailchimp form submissions"},{i:"B",n:"Signup protection"}],
+    lineage:["Visitor sees popup","Submits email","Bot filter","Recorded","Rate computed"],
+    settings:["Signup protection: On","Double opt-in: Per form"],
+    freshness:{updated:"6m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"smsoptin", name:"SMS opt-in rate", surfaces:["Popup Forms"], badge:{l:"Partial",cls:"partial"},
+    def:"Percentage of unique impressions resulting in an SMS opt-in.",
+    formula:"SMS Captures ÷ Impressions (only on SMS-enabled forms)",
+    sources:[{i:"M",n:"Mailchimp form submissions"},{i:"C",n:"SMS consent registry"}],
+    lineage:["Sees popup with SMS field","Submits with consent","TCPA recorded","Counted"],
+    settings:["TCPA consent: Required for US"],
+    freshness:{updated:"6m ago",status:"green",processing:"Complete"},
+    issues:{status:"amber",text:"Most forms don't have SMS field enabled"},
+    change:"No recent changes"},
+  {key:"lpclicks", name:"Clicks (Landing page)", surfaces:["Campaigns"], badge:{l:"Official",cls:"official"},
+    def:"Number of times any link on this landing page was clicked.",
+    formula:"Σ link_clicks on this landing page",
+    sources:[{i:"M",n:"Mailchimp landing page tracker"}],
+    lineage:["Visitor lands","Visitor clicks","Click counted"],
+    settings:["Track all links: On"],
+    freshness:{updated:"3m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"visits", name:"Visits (Landing page)", surfaces:["Campaigns"], badge:{l:"Official",cls:"official"},
+    def:"Total page-loads of the landing page.",
+    formula:"Count(page_load events)",
+    sources:[{i:"M",n:"Mailchimp landing page tracker"}],
+    lineage:["Visitor opens URL","Beacon fires","Visit recorded"],
+    settings:["Bot filter: On"],
+    freshness:{updated:"3m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"signups", name:"Signups (Landing page)", surfaces:["Campaigns"], badge:{l:"Official",cls:"official"},
+    def:"Unique form submissions on this landing page.",
+    formula:"Count(distinct form_submissions)",
+    sources:[{i:"M",n:"Mailchimp landing page form submissions"}],
+    lineage:["Visitor lands","Fills form","Submitted","Dedup applied","Counted"],
+    settings:["Double opt-in: Per form","Bot filter: On"],
+    freshness:{updated:"3m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+
+  // ─── Audience Analytics ───────────────────────────────────
+  {key:"subscribed", name:"Subscribed", surfaces:["Home","Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Contacts who have opted in to receive your emails or SMS.",
+    formula:"Count(contacts WHERE status = 'subscribed')",
+    sources:[{i:"M",n:"Mailchimp audience database"}],
+    lineage:["Opts in","Confirmation if needed","Status set","Counted"],
+    settings:["Double opt-in: Per signup form"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"nonsubscribed", name:"Non-Subscribed", surfaces:["Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Contacts tracked but without marketing opt-in (e.g. transactional).",
+    formula:"Count(contacts WHERE status = 'non-subscribed')",
+    sources:[{i:"M",n:"Mailchimp audience database"}],
+    lineage:["Added without opt-in","Status: non-subscribed","Counted"],
+    settings:["Includes: Transactional contacts"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"unsubscribed", name:"Unsubscribed (audience)", surfaces:["Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Contacts who previously opted in but have since unsubscribed.",
+    formula:"Count(contacts WHERE status = 'unsubscribed')",
+    sources:[{i:"M",n:"Mailchimp unsubscribe link"},{i:"L",n:"List-Unsubscribe header"},{i:"S",n:"SMS STOP"}],
+    lineage:["Contact unsubs","Recorded","Status set","Counted"],
+    settings:["One-click unsub: On","SMS STOP: Auto"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"emailunsub", name:"Email unsubscribers", surfaces:["Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Contacts who unsubscribed from email at any point.",
+    formula:"Count(contacts WHERE email_status = 'unsubscribed')",
+    sources:[{i:"M",n:"Mailchimp unsubscribe link"}],
+    lineage:["Recipient clicks unsub","Mailchimp records","Status set","Counted"],
+    settings:["One-click unsubscribe: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"newcontacts", name:"New contacts (per source)", surfaces:["Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"New contacts added from a source in the period.",
+    formula:"Count(distinct contacts WHERE first_seen_in_source ∈ period)",
+    sources:[{i:"M",n:"Mailchimp audience database"}],
+    lineage:["Created via source","First-seen recorded","In date range","Counted"],
+    settings:["Re-acquisition: Not counted twice"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"srcunsub", name:"Unsubscribed (per source)", surfaces:["Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Contacts from a source who unsubscribed in the period.",
+    formula:"Count(unsubs WHERE source = X AND date ∈ range)",
+    sources:[{i:"M",n:"Mailchimp audience database"}],
+    lineage:["Contact from source","Unsubscribes","Counted under source"],
+    settings:[],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+  {key:"srcrev", name:"Attributed revenue (per source)", surfaces:["Audience Analytics"], badge:{l:"Differs from Shopify",cls:"differs"},
+    def:"Revenue attributed to contacts originally acquired from a source.",
+    formula:"Σ attributed revenue WHERE contact.source = X",
+    sources:[{i:"M",n:"Mailchimp audience database"},{i:"S",n:"Shopify order events"},{i:"A",n:"Attribution engine v2.4"}],
+    lineage:["Acquired via source","Receives campaigns","Attribution events","Revenue summed back"],
+    settings:["Attribution: 5-day click"],
+    freshness:{updated:"38m ago",status:"amber",processing:"98% complete"},
+    issues:{status:"amber",text:"Shopify sync delayed"},
+    change:"Apr 2026"},
+  {key:"netsubgrowth", name:"Total net subscriptions growth", surfaces:["Audience Analytics"], badge:{l:"Official",cls:"official"},
+    def:"Net change in subscribers per day (new minus losses).",
+    formula:"New subscribers − (Unsubs + Hard bounces + Complaints)",
+    sources:[{i:"M",n:"Mailchimp audience database"},{i:"B",n:"Signup protection filter"}],
+    lineage:["New subscribers","Bot filter","Losses subtracted","Net daily growth"],
+    settings:["Signup protection: On"],
+    freshness:{updated:"12m ago",status:"green",processing:"Complete"},
+    issues:{status:"green",text:"None detected"},
+    change:"No recent changes"},
+];
+
+/* Render */
+const body = document.getElementById("cat-body");
+const stats = document.getElementById("stat-strip");
+const countPill = document.getElementById("count-pill");
+const searchInput = document.getElementById("search-input");
+
+let activeFilter = "all";
+let searchQ = "";
+
+function renderStats(rows){
+  const byBadge = {};
+  rows.forEach(r=>{ byBadge[r.badge.cls] = (byBadge[r.badge.cls]||0) + 1; });
+  const items = [
+    {n: rows.length, l: "Total metrics"},
+    {n: byBadge.official||0, l: "Official"},
+    {n: byBadge.modeled||0, l: "Modeled"},
+    {n: byBadge.differs||0, l: "Differs"},
+    {n: byBadge.partial||0, l: "Partial"},
+  ];
+  stats.innerHTML = items.map(i=>`<div class="stat-pill"><span class="num">${i.n}</span><span class="lbl">${i.l}</span></div>`).join("");
+}
+
+function renderTable(){
+  const filtered = CATALOG.filter(r=>{
+    if(activeFilter!=="all" && r.badge.cls!==activeFilter) return false;
+    if(searchQ){
+      const q = searchQ.toLowerCase();
+      const blob = (r.name + " " + r.def + " " + r.formula + " " + r.surfaces.join(" ") + " " + r.sources.map(s=>s.n).join(" ") + " " + r.key).toLowerCase();
+      if(!blob.includes(q)) return false;
+    }
+    return true;
+  });
+
+  countPill.textContent = `Showing ${filtered.length} of ${CATALOG.length} metrics`;
+
+  if(filtered.length===0){
+    body.innerHTML = `<tr><td colspan="12" class="empty-state">No metrics match your search.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = filtered.map((r,i)=>`
+    <tr>
+      <td class="num-cell">${i+1}</td>
+      <td>
+        <div class="metric-name">${r.name}</div>
+        <span class="metric-key">${r.key}</span>
+      </td>
+      <td>
+        ${r.surfaces.map(s=>`<span class="where-tag">${s}</span>`).join("")}
+      </td>
+      <td><span class="badge ${r.badge.cls}">${r.badge.l}</span></td>
+      <td>${r.def}</td>
+      <td><span class="formula-mono">${r.formula}</span></td>
+      <td>
+        <div class="src-list">
+          ${r.sources.map(s=>`<div class="src-item"><span class="src-icon">${s.i}</span>${s.n}</div>`).join("")}
+        </div>
+      </td>
+      <td>
+        <div class="lineage-list"><ol>${r.lineage.map(s=>`<li>${s}</li>`).join("")}</ol></div>
+      </td>
+      <td>
+        <div class="settings-list">
+          ${r.settings.length ? r.settings.map(s=>`<span class="settings-pill-sm">${s}</span>`).join("") : '<span style="color:var(--text-3);font-size:11px">—</span>'}
+        </div>
+      </td>
+      <td>
+        <div class="fresh-cell">
+          <div class="stat-row"><span class="dot ${r.freshness.status}"></span><span>${r.freshness.updated}</span></div>
+          <div class="meta">${r.freshness.processing}</div>
+        </div>
+      </td>
+      <td>
+        <div class="issues-cell ${r.issues.status}">${r.issues.text}</div>
+      </td>
+      <td>
+        <div class="change-cell">${r.change}</div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+document.querySelectorAll(".chip").forEach(c=>{
+  c.addEventListener("click", ()=>{
+    document.querySelectorAll(".chip").forEach(x=>x.classList.remove("active"));
+    c.classList.add("active");
+    activeFilter = c.dataset.filter;
+    renderTable();
+  });
+});
+
+searchInput.addEventListener("input", e=>{
+  searchQ = e.target.value;
+  renderTable();
+});
+
+renderStats(CATALOG);
+renderTable();
+</script>
+</body>
+</html>
