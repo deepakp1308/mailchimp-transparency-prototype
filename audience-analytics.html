@@ -850,7 +850,7 @@ const METRICS = {
     formula:"Count(contacts WHERE source = 'Mailchimp for Shopify')",
     lineage:[{label:"Customer checks out in Shopify",sub:"With marketing consent"},{label:"Shopify webhook fires",sub:"customers/create or customers/update"},{label:"Mailchimp for Shopify maps fields",sub:""},{label:"Contact created/updated",sub:""},{label:"Counted",sub:"2,558 contacts"}],
     sources:[{sys:"Shopify customer events",icon:"S"},{sys:"Mailchimp for Shopify integration",icon:"M"}],
-    settings:["Sync direction: Shopify → Mailchimp","Marketing consent: Required"],
+    settings:["Sync direction: Shopify to Mailchimp","Marketing consent: Required"],
     trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
     ai:["Why is Shopify down 0.08%?","Which Shopify customers haven't synced?","Compare Shopify-sourced revenue vs other sources"]},
   "src-import":{title:"Source: Import",badge:{label:"Official",cls:"official"},
