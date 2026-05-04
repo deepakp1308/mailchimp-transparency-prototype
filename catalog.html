@@ -73,27 +73,33 @@
   .chip.active{background:var(--peppercorn);color:#fff;border-color:var(--peppercorn)}
   .count-pill{font-size:12px;color:var(--text-2);font-weight:500;margin-left:auto}
 
-  /* Catalog table */
-  .table-wrap{border:1px solid var(--border);border-radius:6px;overflow:hidden;background:#fff}
-  table.cat{width:100%;border-collapse:collapse;table-layout:fixed}
+  /* Catalog table — horizontally scrollable, columns at full width */
+  .table-wrap{border:1px solid var(--border);border-radius:6px;background:#fff;overflow-x:auto;overflow-y:visible;max-width:100%}
+  .table-wrap::-webkit-scrollbar{height:14px}
+  .table-wrap::-webkit-scrollbar-track{background:var(--bg-soft);border-top:1px solid var(--border)}
+  .table-wrap::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:7px;border:3px solid var(--bg-soft)}
+  .table-wrap::-webkit-scrollbar-thumb:hover{background:var(--text-3)}
+  .scroll-hint{font-size:11px;color:var(--text-2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .scroll-hint svg{width:12px;height:12px}
+  table.cat{border-collapse:collapse;table-layout:fixed;width:max-content}
   table.cat thead th{font-size:11px;font-weight:600;color:var(--text-2);text-align:left;padding:10px 12px;background:var(--bg-soft);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0;z-index:5}
   table.cat tbody td{padding:14px 12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px;color:var(--text);line-height:1.5}
   table.cat tbody tr:last-child td{border-bottom:none}
   table.cat tbody tr:hover{background:var(--bg-soft)}
 
   /* Column widths */
-  .col-num{width:40px}
-  .col-name{width:170px}
-  .col-where{width:140px}
-  .col-badge{width:140px}
-  .col-def{width:240px}
-  .col-formula{width:200px}
-  .col-sources{width:170px}
-  .col-lineage{width:180px}
-  .col-settings{width:160px}
-  .col-fresh{width:120px}
-  .col-issues{width:170px}
-  .col-change{width:130px}
+  .col-num{width:48px;min-width:48px}
+  .col-name{width:200px;min-width:200px}
+  .col-where{width:340px;min-width:340px}
+  .col-badge{width:170px;min-width:170px}
+  .col-def{width:300px;min-width:300px}
+  .col-formula{width:240px;min-width:240px}
+  .col-sources{width:200px;min-width:200px}
+  .col-lineage{width:220px;min-width:220px}
+  .col-settings{width:180px;min-width:180px}
+  .col-fresh{width:140px;min-width:140px}
+  .col-issues{width:200px;min-width:200px}
+  .col-change{width:160px;min-width:160px}
 
   .num-cell{font-size:11px;color:var(--text-3);font-weight:500;text-align:right;padding-right:10px;font-variant-numeric:tabular-nums}
   .metric-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.3}
@@ -116,6 +122,13 @@
   .legend-cell .desc{font-size:12px;color:var(--text);line-height:1.5;margin-bottom:6px}
   .legend-cell .ex{font-size:11px;color:var(--text-2);line-height:1.45;background:var(--bg-soft);border-left:2px solid var(--border-2);padding:6px 10px;border-radius:0 3px 3px 0}
   .legend-cell .ex strong{color:var(--text);font-weight:600}
+  .legend-cell .ex em{font-style:normal;color:var(--text-2)}
+  .store-token{font-weight:600;color:var(--text);background:var(--mc-yellow);padding:0 4px;border-radius:2px}
+
+  /* Badge cell: badge + optional sub-line */
+  .badge-cell{display:flex;flex-direction:column;gap:5px}
+  .badge-sub{font-size:10px;color:var(--text-2);line-height:1.4;font-style:italic}
+  .badge-sub a{color:var(--teal);font-style:normal;font-weight:500;cursor:pointer}
 
   .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:3px;letter-spacing:.2px;line-height:1.6;border:1px solid transparent}
   .badge.official{background:var(--success-bg);color:var(--success-fg)}
@@ -222,31 +235,25 @@
     <!-- Trust badge legend -->
     <div class="legend-card">
       <h3 class="legend-title">Trust badge taxonomy</h3>
+      <p style="font-size:12px;color:var(--text-2);margin:0 0 14px;line-height:1.55">Connected store: <strong id="store-name" style="color:var(--text)">Shopify</strong>. Modeled metrics that compare to your store will use this name dynamically.</p>
       <div class="legend-grid">
         <div class="legend-cell">
           <div class="head"><span class="badge official">Official</span></div>
-          <div class="desc">A first-party fact counted by Mailchimp infrastructure with no estimation, no attribution model, and no third-party reconciliation. The number is what was directly observed.</div>
-          <div class="ex"><strong>Example: Click rate.</strong> Mailchimp's link redirector saw 76 unique clicks out of 9,645 deliveries — both events were directly logged by Mailchimp.</div>
+          <div class="desc">A first-party fact directly observed by Mailchimp infrastructure — no estimation, no attribution model, no third-party reconciliation. The number is exactly what was logged.</div>
+          <div class="ex"><strong>Example: Click rate.</strong> Mailchimp's link redirector saw 76 unique clicks out of 9,645 deliveries. Both events were logged directly by Mailchimp.</div>
         </div>
         <div class="legend-cell">
-          <div class="head"><span class="badge modeled">Modeled</span></div>
-          <div class="desc">Computed via a statistical model, heuristic, or estimator because the raw event isn't reliably observable. Includes filters, smoothing, or probabilistic adjustment. Treat as an estimate within a confidence range.</div>
-          <div class="ex"><strong>Example: Open rate.</strong> Apple Mail Privacy Protection prefetches tracking pixels, so the raw open count is unreliable. Mailchimp's bot filter v3.2 removes likely MPP opens — the resulting number is a model output, not a hard count.</div>
-        </div>
-        <div class="legend-cell">
-          <div class="head"><span class="badge differs">Differs from Shopify</span></div>
-          <div class="desc">A metric that uses Mailchimp's attribution model (e.g. 5-day click window) and will not match the equivalent number in Shopify, GA4, or another third-party. This is by design — different systems use different attribution rules. A reconciliation drawer is available to explain the gap.</div>
-          <div class="ex"><strong>Example: Order rate.</strong> Mailchimp counts 0 orders attributed to campaigns this period; Shopify shows 4 storewide orders. None of the 4 buyers clicked a Mailchimp campaign within the 5-day window — they came via direct, search, or another channel.</div>
-        </div>
-        <div class="legend-cell">
-          <div class="head"><span class="badge partial">Partial</span></div>
-          <div class="desc">The metric is computed correctly, but the input population is incomplete. Either coverage is gated by an opt-in (e.g. SMS field on a form), some sources are unmapped, or some contacts are missing required attribution. Use as a directional signal, not a benchmark.</div>
-          <div class="ex"><strong>Example: SMS opt-in rate.</strong> Most popup forms don't have an SMS field enabled, so impressions on those forms can't contribute. The percentage is real for the forms that do — but doesn't represent your full audience opportunity.</div>
+          <div class="head">
+            <span class="badge modeled">Modeled</span>
+          </div>
+          <div class="desc">Computed via a statistical model, attribution rule, heuristic, or estimator. Used whenever the raw event isn't directly observable (e.g. opens behind privacy protection) <em>or</em> when the metric depends on rules like attribution windows. Treat as an estimate within a confidence range.</div>
+          <div class="ex"><strong>Example 1 — Open rate.</strong> Apple Mail Privacy Protection prefetches tracking pixels. Mailchimp's bot filter v3.2 removes likely MPP opens — the result is a model output, not a hard count.</div>
+          <div class="ex" style="margin-top:6px"><strong>Example 2 — Attributed Revenue.</strong> Mailchimp credits revenue to a campaign when the buyer clicked it within the 5-day attribution window. This will not match your store's storewide revenue (which counts all orders). The metric will show a sub-line: <em>"May differ from <span class="store-token">Shopify</span> · open reconciliation"</em> when applicable.</div>
         </div>
         <div class="legend-cell">
           <div class="head"><span class="badge delayed">Delayed</span></div>
-          <div class="desc">The metric is Official or Modeled, but its data pipeline is still finalizing for the current period. Numbers may move up as late events flush through (typically within hours). Look for "Processing: 98% complete" in the metric's Trust tab.</div>
-          <div class="ex"><strong>Example: Revenue (Attributed).</strong> Shopify webhook sync is running ~2 hours behind. Currently 98% complete — late orders may add to today's revenue once the sync catches up.</div>
+          <div class="desc">The metric is Official or Modeled, but its pipeline is still finalizing for the current period. Numbers may move up as late events flush through (typically within hours). Look for "Processing: 98% complete" in the metric's Trust tab.</div>
+          <div class="ex"><strong>Example: Revenue (Attributed).</strong> <span class="store-token">Shopify</span> webhook sync is ~2 hours behind. Currently 98% complete — late orders may add to today's revenue once sync catches up.</div>
         </div>
       </div>
     </div>
@@ -261,13 +268,15 @@
         <span class="chip active" data-filter="all">All</span>
         <span class="chip" data-filter="official">Official</span>
         <span class="chip" data-filter="modeled">Modeled</span>
-        <span class="chip" data-filter="differs">Differs</span>
-        <span class="chip" data-filter="partial">Partial</span>
         <span class="chip" data-filter="delayed">Delayed</span>
       </div>
       <span class="count-pill" id="count-pill"></span>
     </div>
 
+    <div class="scroll-hint">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4M7 4L3 8l4 4"/></svg>
+      Scroll horizontally to see all columns
+    </div>
     <div class="table-wrap">
       <table class="cat">
         <thead>
@@ -866,6 +875,13 @@ const CATALOG = [
 ];
 
 /* ============================================================
+   STORE NAME — dynamic, reflects whichever ecommerce platform
+   the customer has connected. Modeled metrics that compare to
+   the store will use this name in their sub-line.
+   ============================================================ */
+const STORE_NAME = "Shopify"; // could be: Shopify, WooCommerce, BigCommerce, Squarespace Commerce, etc.
+
+/* ============================================================
    PLACEMENT MAP — for each metric key, where exactly it shows
    up on the dashboard (page + specific card/section/component)
    ============================================================ */
@@ -1020,6 +1036,29 @@ const PLACEMENTS = {
   ],
 };
 
+/* ============================================================
+   Normalize legacy badges:
+     - "Differs from Shopify" / "Differs" → Modeled, with comparesToStore=true
+     - "Partial" → Modeled (kept its known-issue note for context)
+     - Update displayed badge label to "Modeled"
+   ============================================================ */
+function normalizeBadges(){
+  CATALOG.forEach(r=>{
+    if(r.badge.cls === "differs"){
+      r.badge = {l:"Modeled", cls:"modeled"};
+      r.comparesToStore = true;
+    } else if(r.badge.cls === "partial"){
+      r.badge = {l:"Modeled", cls:"modeled"};
+      r.comparesToStore = false;
+    }
+  });
+}
+normalizeBadges();
+
+/* Apply dynamic store name to legend tokens */
+document.querySelectorAll("#store-name").forEach(el=>{ el.textContent = STORE_NAME; });
+document.querySelectorAll(".store-token").forEach(el=>{ el.textContent = STORE_NAME; });
+
 /* Render */
 const body = document.getElementById("cat-body");
 const stats = document.getElementById("stat-strip");
@@ -1032,12 +1071,13 @@ let searchQ = "";
 function renderStats(rows){
   const byBadge = {};
   rows.forEach(r=>{ byBadge[r.badge.cls] = (byBadge[r.badge.cls]||0) + 1; });
+  const comparesCount = rows.filter(r=>r.comparesToStore).length;
   const items = [
     {n: rows.length, l: "Total metrics"},
     {n: byBadge.official||0, l: "Official"},
     {n: byBadge.modeled||0, l: "Modeled"},
-    {n: byBadge.differs||0, l: "Differs"},
-    {n: byBadge.partial||0, l: "Partial"},
+    {n: comparesCount, l: `Compares to ${STORE_NAME}`},
+    {n: byBadge.delayed||0, l: "Delayed"},
   ];
   stats.innerHTML = items.map(i=>`<div class="stat-pill"><span class="num">${i.n}</span><span class="lbl">${i.l}</span></div>`).join("");
 }
@@ -1081,7 +1121,12 @@ function renderTable(){
       <td>
         <div class="where-list">${placesHtml}</div>
       </td>
-      <td><span class="badge ${r.badge.cls}">${r.badge.l}</span></td>
+      <td>
+        <div class="badge-cell">
+          <span class="badge ${r.badge.cls}">${r.badge.l}</span>
+          ${r.comparesToStore ? `<div class="badge-sub">May differ from <strong>${STORE_NAME}</strong> · <a>open reconciliation</a></div>` : ""}
+        </div>
+      </td>
       <td>${r.def}</td>
       <td><span class="formula-mono">${r.formula}</span></td>
       <td>
