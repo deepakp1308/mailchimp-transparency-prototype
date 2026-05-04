@@ -100,6 +100,22 @@
   .metric-key{font-size:10px;color:var(--text-3);font-family:"SF Mono",Monaco,Consolas,monospace!important;background:var(--bg-soft);padding:1px 6px;border-radius:3px;display:inline-block}
 
   .where-tag{display:inline-flex;align-items:center;font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;background:var(--bg-soft);border:1px solid var(--border-2);color:var(--text);margin:0 3px 3px 0;letter-spacing:.2px}
+  .where-list{display:flex;flex-direction:column;gap:6px}
+  .where-item{font-size:11px;line-height:1.4}
+  .where-item .page{font-weight:600;color:var(--text);display:block}
+  .where-item .comp{color:var(--text-2);padding-left:8px;display:block;font-size:10.5px}
+  .where-item .comp::before{content:"↳";color:var(--text-3);margin-right:4px}
+
+  /* Badge legend block */
+  .legend-card{background:var(--bg-soft);border:1px solid var(--border);border-radius:6px;padding:18px 20px;margin-bottom:18px}
+  .legend-title{font-size:14px;font-weight:600;color:var(--text);margin:0 0 12px;display:flex;align-items:center;gap:8px}
+  .legend-title svg{width:14px;height:14px;color:var(--text-2)}
+  .legend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .legend-cell{background:#fff;border:1px solid var(--border);border-radius:4px;padding:12px 14px}
+  .legend-cell .head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .legend-cell .desc{font-size:12px;color:var(--text);line-height:1.5;margin-bottom:6px}
+  .legend-cell .ex{font-size:11px;color:var(--text-2);line-height:1.45;background:var(--bg-soft);border-left:2px solid var(--border-2);padding:6px 10px;border-radius:0 3px 3px 0}
+  .legend-cell .ex strong{color:var(--text);font-weight:600}
 
   .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:3px;letter-spacing:.2px;line-height:1.6;border:1px solid transparent}
   .badge.official{background:var(--success-bg);color:var(--success-fg)}
@@ -202,6 +218,38 @@
     </div>
 
     <div class="stat-strip" id="stat-strip"></div>
+
+    <!-- Trust badge legend -->
+    <div class="legend-card">
+      <h3 class="legend-title">Trust badge taxonomy</h3>
+      <div class="legend-grid">
+        <div class="legend-cell">
+          <div class="head"><span class="badge official">Official</span></div>
+          <div class="desc">A first-party fact counted by Mailchimp infrastructure with no estimation, no attribution model, and no third-party reconciliation. The number is what was directly observed.</div>
+          <div class="ex"><strong>Example: Click rate.</strong> Mailchimp's link redirector saw 76 unique clicks out of 9,645 deliveries — both events were directly logged by Mailchimp.</div>
+        </div>
+        <div class="legend-cell">
+          <div class="head"><span class="badge modeled">Modeled</span></div>
+          <div class="desc">Computed via a statistical model, heuristic, or estimator because the raw event isn't reliably observable. Includes filters, smoothing, or probabilistic adjustment. Treat as an estimate within a confidence range.</div>
+          <div class="ex"><strong>Example: Open rate.</strong> Apple Mail Privacy Protection prefetches tracking pixels, so the raw open count is unreliable. Mailchimp's bot filter v3.2 removes likely MPP opens — the resulting number is a model output, not a hard count.</div>
+        </div>
+        <div class="legend-cell">
+          <div class="head"><span class="badge differs">Differs from Shopify</span></div>
+          <div class="desc">A metric that uses Mailchimp's attribution model (e.g. 5-day click window) and will not match the equivalent number in Shopify, GA4, or another third-party. This is by design — different systems use different attribution rules. A reconciliation drawer is available to explain the gap.</div>
+          <div class="ex"><strong>Example: Order rate.</strong> Mailchimp counts 0 orders attributed to campaigns this period; Shopify shows 4 storewide orders. None of the 4 buyers clicked a Mailchimp campaign within the 5-day window — they came via direct, search, or another channel.</div>
+        </div>
+        <div class="legend-cell">
+          <div class="head"><span class="badge partial">Partial</span></div>
+          <div class="desc">The metric is computed correctly, but the input population is incomplete. Either coverage is gated by an opt-in (e.g. SMS field on a form), some sources are unmapped, or some contacts are missing required attribution. Use as a directional signal, not a benchmark.</div>
+          <div class="ex"><strong>Example: SMS opt-in rate.</strong> Most popup forms don't have an SMS field enabled, so impressions on those forms can't contribute. The percentage is real for the forms that do — but doesn't represent your full audience opportunity.</div>
+        </div>
+        <div class="legend-cell">
+          <div class="head"><span class="badge delayed">Delayed</span></div>
+          <div class="desc">The metric is Official or Modeled, but its data pipeline is still finalizing for the current period. Numbers may move up as late events flush through (typically within hours). Look for "Processing: 98% complete" in the metric's Trust tab.</div>
+          <div class="ex"><strong>Example: Revenue (Attributed).</strong> Shopify webhook sync is running ~2 hours behind. Currently 98% complete — late orders may add to today's revenue once the sync catches up.</div>
+        </div>
+      </div>
+    </div>
 
     <div class="controls">
       <div class="filter-search">
@@ -817,6 +865,161 @@ const CATALOG = [
     change:"No recent changes"},
 ];
 
+/* ============================================================
+   PLACEMENT MAP — for each metric key, where exactly it shows
+   up on the dashboard (page + specific card/section/component)
+   ============================================================ */
+const PLACEMENTS = {
+  totalsends: [{p:"Home", c:"Marketing snapshot · KPI"}],
+  deliveryrate: [{p:"Home", c:"Marketing snapshot · KPI"}],
+  openrate: [
+    {p:"Home", c:"Marketing snapshot · KPI"},
+    {p:"Campaign Manager", c:"Performance bar · 4-up summary"},
+    {p:"All campaigns", c:"Per-row analytics column (Email + Automation rows)"},
+  ],
+  clickrate: [
+    {p:"Home", c:"Marketing snapshot · KPI"},
+    {p:"Home", c:"Recent campaigns table · column"},
+    {p:"Campaign Manager", c:"Performance bar · 4-up summary"},
+    {p:"All campaigns", c:"Per-row analytics column"},
+    {p:"Marketing dashboard", c:"Monitor performance · KPI row"},
+    {p:"Marketing dashboard", c:"Performance over time · chart metric label"},
+  ],
+  orderrate: [
+    {p:"Home", c:"Marketing snapshot · KPI"},
+    {p:"Campaign Manager", c:"Performance bar · 4-up summary"},
+  ],
+  unsubrate: [
+    {p:"Home", c:"Marketing snapshot · KPI"},
+    {p:"Campaign Manager", c:"Performance bar · 4-up summary"},
+  ],
+  totalcontacts: [
+    {p:"Home", c:"Audience card · stat block"},
+    {p:"Audience Analytics", c:"Audience Overview · KPI"},
+    {p:"Audience Analytics", c:"Contacts over time · side panel total"},
+  ],
+  netgrowth: [{p:"Home", c:"Audience card · stat block"}],
+  emailsubs: [
+    {p:"Home", c:"Audience card · Subscribed contacts row"},
+    {p:"Audience Analytics", c:"Contacts over time · side panel sub-row"},
+  ],
+  smssubs: [
+    {p:"Home", c:"Audience card · Subscribed contacts row"},
+    {p:"SMS", c:"SMS performance · KPI"},
+    {p:"Audience Analytics", c:"Contacts over time · side panel sub-row"},
+  ],
+  recipients: [{p:"Home", c:"Recent campaigns table · column"}],
+  campaignrev: [
+    {p:"Home", c:"Recent campaigns table · column"},
+    {p:"All campaigns", c:"Per-row analytics column (Regular email rows)"},
+  ],
+
+  // Marketing dashboard (analytics.html)
+  revenue: [
+    {p:"Marketing dashboard", c:"Monitor performance · KPI"},
+    {p:"Marketing dashboard", c:"Conversions funnel · final step"},
+  ],
+  aor: [{p:"Marketing dashboard", c:"Monitor performance · KPI"}],
+  orders: [
+    {p:"Marketing dashboard", c:"Monitor performance · KPI"},
+    {p:"Marketing dashboard", c:"Conversions funnel · step 4"},
+  ],
+  opens: [
+    {p:"Marketing dashboard", c:"Conversions funnel · step 2"},
+    {p:"All campaigns", c:"Per-row analytics column"},
+  ],
+  clicks: [
+    {p:"Marketing dashboard", c:"Conversions funnel · step 3"},
+    {p:"All campaigns", c:"Per-row analytics column"},
+  ],
+  deliveries: [
+    {p:"Marketing dashboard", c:"Conversions funnel · step 1"},
+    {p:"Marketing dashboard", c:"Delivery card · details list"},
+  ],
+  revpr: [{p:"Marketing dashboard", c:"Conversions card · headline metric"}],
+  abuserate: [{p:"Marketing dashboard", c:"Delivery card · headline metric"}],
+  emailssent: [{p:"Marketing dashboard", c:"Delivery card · details list"}],
+  bounces: [{p:"Marketing dashboard", c:"Delivery card · details list"}],
+  unsub: [{p:"Marketing dashboard", c:"Delivery card · details list"}],
+  abusereports: [{p:"Marketing dashboard", c:"Delivery card · details list"}],
+  totalcount: [{p:"Marketing dashboard", c:"Performance over time · side panel"}],
+  totalsent: [{p:"Marketing dashboard", c:"Performance over time · side panel"}],
+
+  // Campaign Manager
+  sdo: [{p:"Campaign Manager", c:"Calendar · Send-day quality pills (Good/Better/Best per day)"}],
+
+  // Automations
+  started: [
+    {p:"Automations", c:"Automation flows list · per-row metric"},
+    {p:"All campaigns", c:"Per-row analytics column (Automation flow rows)"},
+  ],
+  inprogress: [
+    {p:"Automations", c:"Automation flows list · per-row metric"},
+    {p:"All campaigns", c:"Per-row analytics column (Automation flow rows)"},
+  ],
+  completed: [
+    {p:"Automations", c:"Automation flows list · per-row metric"},
+    {p:"All campaigns", c:"Per-row analytics column (Automation flow rows)"},
+  ],
+
+  // SMS
+  smssent: [{p:"SMS", c:"SMS performance · KPI"}],
+  smsdelivery: [{p:"SMS", c:"SMS performance · KPI"}],
+  smsclick: [{p:"SMS", c:"SMS performance · KPI"}],
+  smsunsub: [
+    {p:"SMS", c:"SMS performance · KPI"},
+    {p:"Audience Analytics", c:"Contacts over time · side panel"},
+  ],
+  smsrev: [{p:"SMS", c:"SMS performance · KPI (Stripe-sourced)"}],
+  smscontacts: [{p:"Audience Analytics", c:"SMS Contacts card · headline + bar chart"}],
+
+  // Forms (Popup)
+  visitors: [{p:"Popup Forms", c:"Overall popup performance · KPI"}],
+  impressions: [{p:"Popup Forms", c:"Overall popup performance · KPI"}],
+  emailoptin: [{p:"Popup Forms", c:"Overall popup performance · KPI"}],
+  smsoptin: [{p:"Popup Forms", c:"Overall popup performance · KPI"}],
+  lpclicks: [{p:"All campaigns", c:"Per-row analytics column (Landing page rows)"}],
+  visits: [{p:"All campaigns", c:"Per-row analytics column (Landing page rows)"}],
+  signups: [{p:"All campaigns", c:"Per-row analytics column (Landing page rows)"}],
+
+  // Audience Analytics
+  subscribed: [
+    {p:"Home", c:"Audience card · Subscribed contacts section"},
+    {p:"Audience Analytics", c:"Audience Overview · KPI"},
+  ],
+  nonsubscribed: [{p:"Audience Analytics", c:"Audience Overview · KPI"}],
+  unsubscribed: [{p:"Audience Analytics", c:"Audience Overview · KPI"}],
+  emailunsub: [{p:"Audience Analytics", c:"Contacts over time · side panel"}],
+  newcontacts: [{p:"Audience Analytics", c:"Source performance table · column"}],
+  srcunsub: [{p:"Audience Analytics", c:"Source performance table · column"}],
+  srcrev: [{p:"Audience Analytics", c:"Source performance table · column"}],
+  netsubgrowth: [{p:"Audience Analytics", c:"What's changed · headline + chart"}],
+
+  // Source breakdown (Audience Analytics)
+  "src-popup": [
+    {p:"Audience Analytics", c:"Source performance table · row"},
+    {p:"Audience Analytics", c:"Source performance over time · breakdown list"},
+  ],
+  "src-api": [{p:"Audience Analytics", c:"Source performance over time · breakdown list"}],
+  "src-inbox": [{p:"Audience Analytics", c:"Source performance over time · breakdown list"}],
+  "src-shopify": [{p:"Audience Analytics", c:"Source performance over time · breakdown list"}],
+  "src-import": [{p:"Audience Analytics", c:"Source performance over time · breakdown list"}],
+  "src-quickbooks": [
+    {p:"Audience Analytics", c:"Source performance table · row"},
+    {p:"Audience Analytics", c:"Source performance over time · breakdown list"},
+  ],
+  "src-squarespace": [
+    {p:"Audience Analytics", c:"Source performance table · row"},
+    {p:"Audience Analytics", c:"Source performance over time · breakdown list"},
+  ],
+  "src-iosapp": [{p:"Audience Analytics", c:"Source performance over time · breakdown list"}],
+  "src-survey": [{p:"Audience Analytics", c:"Source performance table · row"}],
+  "src-unknown": [
+    {p:"Audience Analytics", c:"Source performance table · row"},
+    {p:"Audience Analytics", c:"Source performance over time · breakdown list"},
+  ],
+};
+
 /* Render */
 const body = document.getElementById("cat-body");
 const stats = document.getElementById("stat-strip");
@@ -857,7 +1060,18 @@ function renderTable(){
     return;
   }
 
-  body.innerHTML = filtered.map((r,i)=>`
+  body.innerHTML = filtered.map((r,i)=>{
+    const places = PLACEMENTS[r.key] || r.surfaces.map(s=>({p:s,c:"—"}));
+    // Group placements by page for cleaner nesting
+    const grouped = {};
+    places.forEach(pl=>{ (grouped[pl.p] = grouped[pl.p] || []).push(pl.c); });
+    const placesHtml = Object.keys(grouped).map(page=>
+      `<div class="where-item">
+        <span class="page">${page}</span>
+        ${grouped[page].map(c=>`<span class="comp">${c}</span>`).join("")}
+      </div>`
+    ).join("");
+    return `
     <tr>
       <td class="num-cell">${i+1}</td>
       <td>
@@ -865,7 +1079,7 @@ function renderTable(){
         <span class="metric-key">${r.key}</span>
       </td>
       <td>
-        ${r.surfaces.map(s=>`<span class="where-tag">${s}</span>`).join("")}
+        <div class="where-list">${placesHtml}</div>
       </td>
       <td><span class="badge ${r.badge.cls}">${r.badge.l}</span></td>
       <td>${r.def}</td>
@@ -896,7 +1110,7 @@ function renderTable(){
         <div class="change-cell">${r.change}</div>
       </td>
     </tr>
-  `).join("");
+  `;}).join("");
 }
 
 document.querySelectorAll(".chip").forEach(c=>{
