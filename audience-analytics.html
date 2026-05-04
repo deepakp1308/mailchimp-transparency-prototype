@@ -144,8 +144,12 @@
   table.src tbody tr{border-bottom:1px solid var(--border)}
   table.src tbody tr:last-child{border-bottom:none}
   table.src tbody td{padding:14px;color:var(--text)}
-  .src-name{font-weight:500}
-  .src-name.linked{color:var(--teal);text-decoration:underline}
+  .src-name{font-weight:500;border-bottom:1px dotted var(--text-2);cursor:pointer;display:inline}
+  .src-name:hover{color:var(--teal);border-color:var(--teal)}
+  .src-name.linked{color:var(--teal);text-decoration:underline;border-bottom:none}
+  .src-name.linked:hover{color:var(--teal-dark)}
+  .breakdown-name{border-bottom:1px dotted var(--text-2);cursor:pointer}
+  .breakdown-name:hover{color:var(--teal);border-color:var(--teal)}
   .delta-cell{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600}
   .delta-cell svg{width:8px;height:8px}
   .delta-cell.up{color:var(--success-fg)}
@@ -459,7 +463,7 @@
         </thead>
         <tbody>
           <tr>
-            <td><span class="src-name">Survey</span></td>
+            <td><span class="src-name" data-tip="src-survey">Survey</span></td>
             <td>4 <span class="delta-cell flat">0%</span></td>
             <td>0</td>
             <td>0</td>
@@ -467,7 +471,7 @@
             <td class="actions-cell"><span class="seg-btn"><span class="lbl">Create segment</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></td>
           </tr>
           <tr>
-            <td><span class="src-name">Squarespace</span></td>
+            <td><span class="src-name" data-tip="src-squarespace">Squarespace</span></td>
             <td>900 <span class="delta-cell flat">0%</span></td>
             <td>0</td>
             <td>2 <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>100%</span></td>
@@ -475,7 +479,7 @@
             <td class="actions-cell"><span class="seg-btn"><span class="lbl">Create segment</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></td>
           </tr>
           <tr>
-            <td><span class="src-name">QuickBooks Online</span></td>
+            <td><span class="src-name" data-tip="src-quickbooks">QuickBooks Online</span></td>
             <td>1,375 <span class="delta-cell down"><svg><use href="#i-tri-down"/></svg>0.07%</span></td>
             <td>0</td>
             <td>3 <span class="delta-cell down"><svg><use href="#i-tri-down"/></svg>25%</span></td>
@@ -483,7 +487,7 @@
             <td class="actions-cell"><span class="seg-btn"><span class="lbl">Create segment</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></td>
           </tr>
           <tr>
-            <td><span class="src-name">Popup Form</span></td>
+            <td><span class="src-name" data-tip="src-popup">Popup Form</span></td>
             <td>3,226 <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>1.7%</span></td>
             <td>53 <span class="delta-cell down"><svg><use href="#i-tri-down"/></svg>18.5%</span></td>
             <td>26 <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>18.2%</span></td>
@@ -491,7 +495,7 @@
             <td class="actions-cell"><span class="seg-btn"><span class="lbl">Create segment</span><span class="chev"><svg><use href="#i-chevron-d"/></svg></span></span></td>
           </tr>
           <tr>
-            <td><span class="src-name linked">Unknown source</span></td>
+            <td><span class="src-name linked" data-tip="src-unknown">Unknown source</span></td>
             <td>360 <span class="delta-cell down"><svg><use href="#i-tri-down"/></svg>0.28%</span></td>
             <td>0</td>
             <td>1 <span class="delta-cell flat">0%</span></td>
@@ -564,15 +568,15 @@
             <span style="font-weight:600">Source breakdown</span>
             <span style="font-weight:600">Contacts</span>
           </div>
-          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span>Popup Form</span><span><strong>3,226</strong> <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>1.7%</span></span></div>
-          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span>API - Generic</span><span><strong>2,691</strong> <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>0.67%</span></span></div>
-          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span>Inbox</span><span><strong>2,282</strong> <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>5.6%</span></span></div>
-          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span>Mailchimp for Shopify</span><span><strong>2,558</strong> <span class="delta-cell down"><svg><use href="#i-tri-down"/></svg>0.08%</span></span></div>
-          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span>Import</span><span><strong>2,455</strong> <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>0.45%</span></span></div>
-          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span>QuickBooks Online</span><span><strong>1,375</strong> <span class="delta-cell down"><svg><use href="#i-tri-down"/></svg>0.07%</span></span></div>
-          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span>Squarespace</span><span><strong>900</strong> <span class="delta-cell flat">0%</span></span></div>
-          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span>Mailchimp for iOS</span><span><strong>423</strong> <span class="delta-cell flat">0%</span></span></div>
-          <div class="sub-row" style="padding:10px 0;font-size:13px;display:flex;justify-content:space-between;align-items:center"><span class="src-name linked">Unknown source</span><span><strong>360</strong> <span class="delta-cell down"><svg><use href="#i-tri-down"/></svg>0.28%</span></span></div>
+          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span class="breakdown-name" data-tip="src-popup">Popup Form</span><span><strong>3,226</strong> <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>1.7%</span></span></div>
+          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span class="breakdown-name" data-tip="src-api">API - Generic</span><span><strong>2,691</strong> <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>0.67%</span></span></div>
+          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span class="breakdown-name" data-tip="src-inbox">Inbox</span><span><strong>2,282</strong> <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>5.6%</span></span></div>
+          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span class="breakdown-name" data-tip="src-shopify">Mailchimp for Shopify</span><span><strong>2,558</strong> <span class="delta-cell down"><svg><use href="#i-tri-down"/></svg>0.08%</span></span></div>
+          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span class="breakdown-name" data-tip="src-import">Import</span><span><strong>2,455</strong> <span class="delta-cell up"><svg><use href="#i-tri-up"/></svg>0.45%</span></span></div>
+          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span class="breakdown-name" data-tip="src-quickbooks">QuickBooks Online</span><span><strong>1,375</strong> <span class="delta-cell down"><svg><use href="#i-tri-down"/></svg>0.07%</span></span></div>
+          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span class="breakdown-name" data-tip="src-squarespace">Squarespace</span><span><strong>900</strong> <span class="delta-cell flat">0%</span></span></div>
+          <div class="sub-row" style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;align-items:center"><span class="breakdown-name" data-tip="src-iosapp">Mailchimp for iOS</span><span><strong>423</strong> <span class="delta-cell flat">0%</span></span></div>
+          <div class="sub-row" style="padding:10px 0;font-size:13px;display:flex;justify-content:space-between;align-items:center"><span class="src-name linked" data-tip="src-unknown">Unknown source</span><span><strong>360</strong> <span class="delta-cell down"><svg><use href="#i-tri-down"/></svg>0.28%</span></span></div>
         </div>
       </div>
     </div>
@@ -812,6 +816,100 @@ const METRICS = {
     settings:["Phone format: E.164"],
     trust:[{label:"Last updated",val:"8 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
     ai:["How many SMS contacts are subscribed?","What's the SMS opt-out rate?"]},
+  "src-popup":{title:"Source: Popup Form",badge:{label:"Official",cls:"official"},
+    short:"Contacts who joined your audience by submitting a Mailchimp popup form on your website.",
+    long:"Counts every subscriber whose first signup event came from a Mailchimp-hosted popup form. Includes published popups across all your sites; bot signups are filtered by Mailchimp's signup protection.",
+    formula:"Count(contacts WHERE source = 'Popup Form')",
+    lineage:[{label:"Visitor sees popup",sub:"Triggered by time, scroll, or exit-intent"},{label:"Visitor submits form",sub:"Email and any custom fields"},{label:"Bot filter applied",sub:"Signup protection v2"},{label:"Contact created with source = Popup Form",sub:""},{label:"Counted",sub:"3,226 contacts"}],
+    sources:[{sys:"Mailchimp form submissions",icon:"M"},{sys:"Signup protection filter",icon:"B"}],
+    settings:["Signup protection: On","Double opt-in: Per form"],
+    trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    ai:["Which popup converts best?","Why are popup signups up 1.7%?","How does popup quality compare to other sources?"]},
+  "src-api":{title:"Source: API - Generic",badge:{label:"Official",cls:"official"},
+    short:"Contacts added via the Mailchimp Marketing API (POST /lists/{list_id}/members).",
+    long:"Counts contacts whose initial signup came through your custom API integration. Source name 'API - Generic' appears when no specific integration name was provided in the API call's source header.",
+    formula:"Count(contacts WHERE source = 'API - Generic')",
+    lineage:[{label:"Your backend triggers signup",sub:"E.g. checkout, account creation"},{label:"API call to Mailchimp",sub:"POST /3.0/lists/.../members"},{label:"Source set to 'API - Generic'",sub:"If no source header provided"},{label:"Contact created",sub:""},{label:"Counted",sub:"2,691 contacts"}],
+    sources:[{sys:"Mailchimp Marketing API",icon:"A"}],
+    settings:["API version: 3.0","Source header: optional"],
+    trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    confusion:"'API - Generic' is the catch-all when your API call didn't pass a custom source name. To get a more specific source, set a source header in your integration code.",
+    ai:["Why are some signups labeled 'API - Generic'?","How do I name my API integration?","Show contacts added via API in the last 30 days"]},
+  "src-inbox":{title:"Source: Inbox",badge:{label:"Official",cls:"official"},
+    short:"Contacts added through the Mailchimp Inbox feature (manual reply-to-add).",
+    long:"Created when an Inbox conversation triggers a manual or automated 'add to audience' action. Often used for support-driven signups.",
+    formula:"Count(contacts WHERE source = 'Inbox')",
+    lineage:[{label:"Inbox conversation arrives",sub:"Email or chat thread"},{label:"Agent or automation adds to audience",sub:""},{label:"Contact created with source = Inbox",sub:""},{label:"Counted",sub:"2,282 contacts"}],
+    sources:[{sys:"Mailchimp Inbox",icon:"I"}],
+    settings:["Inbox: Active"],
+    trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    ai:["What's the conversion quality of Inbox signups?","Show recent Inbox-sourced contacts"]},
+  "src-shopify":{title:"Source: Mailchimp for Shopify",badge:{label:"Official",cls:"official"},
+    short:"Contacts synced from your Shopify store via the Mailchimp for Shopify integration.",
+    long:"Includes customers who opted in at checkout (with marketing consent) and pre-existing Shopify customers synced into Mailchimp. Excludes anonymous Shopify orders.",
+    formula:"Count(contacts WHERE source = 'Mailchimp for Shopify')",
+    lineage:[{label:"Customer checks out in Shopify",sub:"With marketing consent"},{label:"Shopify webhook fires",sub:"customers/create or customers/update"},{label:"Mailchimp for Shopify maps fields",sub:""},{label:"Contact created/updated",sub:""},{label:"Counted",sub:"2,558 contacts"}],
+    sources:[{sys:"Shopify customer events",icon:"S"},{sys:"Mailchimp for Shopify integration",icon:"M"}],
+    settings:["Sync direction: Shopify → Mailchimp","Marketing consent: Required"],
+    trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    ai:["Why is Shopify down 0.08%?","Which Shopify customers haven't synced?","Compare Shopify-sourced revenue vs other sources"]},
+  "src-import":{title:"Source: Import",badge:{label:"Official",cls:"official"},
+    short:"Contacts uploaded via CSV or other bulk import.",
+    long:"Counts contacts whose first appearance in your audience came from a manual or scheduled import (CSV, Excel, paste). Re-imports of existing contacts don't increment this count.",
+    formula:"Count(contacts WHERE source = 'Import')",
+    lineage:[{label:"You upload a CSV or paste contacts",sub:""},{label:"Mailchimp parses and dedups",sub:"Same email merged"},{label:"Source set to 'Import'",sub:"For new contacts only"},{label:"Counted",sub:"2,455 contacts"}],
+    sources:[{sys:"Mailchimp import tool",icon:"I"}],
+    settings:["Dedup on email: On","Skip existing: On"],
+    trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    confusion:"Imported contacts are typically lower-quality than form signups because they lack explicit recent consent. Consider re-permission campaigns for older imports.",
+    ai:["When was my last import?","What's the engagement rate of imported contacts?","Re-permission older imports"]},
+  "src-quickbooks":{title:"Source: QuickBooks Online",badge:{label:"Official",cls:"official"},
+    short:"Contacts synced from your QuickBooks Online customer list.",
+    long:"Counts customers brought in via the QuickBooks Online integration. Useful for combining accounting customer data with marketing.",
+    formula:"Count(contacts WHERE source = 'QuickBooks Online')",
+    lineage:[{label:"Customer added in QuickBooks",sub:""},{label:"QuickBooks integration syncs",sub:"Periodic pull"},{label:"Mailchimp creates contact",sub:""},{label:"Counted",sub:"1,375 contacts"}],
+    sources:[{sys:"QuickBooks Online API",icon:"Q"},{sys:"Mailchimp QuickBooks integration",icon:"M"}],
+    settings:["Sync frequency: Every 6 hours","Marketing consent: Inferred from QB"],
+    trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"Down 0.07% — sync may have skipped a customer",status:"amber"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    confusion:"QuickBooks customers may not have explicit marketing opt-in. Check that your QB customer agreements cover marketing communications before sending campaigns.",
+    ai:["Are my QuickBooks contacts opt-in eligible?","Why did QB sync drop?","Show QB customers without an email"]},
+  "src-squarespace":{title:"Source: Squarespace",badge:{label:"Official",cls:"official"},
+    short:"Contacts synced from your Squarespace site forms.",
+    long:"Counts subscribers who joined via Squarespace Newsletter blocks or Squarespace Commerce checkout (when Mailchimp is connected as the email provider).",
+    formula:"Count(contacts WHERE source = 'Squarespace')",
+    lineage:[{label:"Visitor signs up on Squarespace",sub:"Newsletter block or checkout"},{label:"Squarespace webhook fires",sub:""},{label:"Mailchimp creates contact",sub:""},{label:"Counted",sub:"900 contacts"}],
+    sources:[{sys:"Squarespace integration",icon:"S"}],
+    settings:["Sync: Real-time webhook"],
+    trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    ai:["Which Squarespace block converts best?","Show Squarespace signups by page"]},
+  "src-iosapp":{title:"Source: Mailchimp for iOS",badge:{label:"Official",cls:"official"},
+    short:"Contacts added through the Mailchimp iOS app (manual entry, business card scan, or import).",
+    long:"Includes contacts entered while you were on the go — typing them in, scanning a business card, or importing from iOS contacts.",
+    formula:"Count(contacts WHERE source = 'Mailchimp for iOS')",
+    lineage:[{label:"You enter contact in iOS app",sub:"Manual, scan, or iOS contacts"},{label:"App syncs to Mailchimp",sub:""},{label:"Contact created",sub:""},{label:"Counted",sub:"423 contacts"}],
+    sources:[{sys:"Mailchimp for iOS app",icon:"M"}],
+    settings:["iOS app version: 14.x"],
+    trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"None detected",status:"green"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    ai:["Show contacts I added on the go","Which events drove most iOS signups?"]},
+  "src-survey":{title:"Source: Survey",badge:{label:"Official",cls:"official"},
+    short:"Contacts who provided their email through a Mailchimp survey response.",
+    long:"Counts respondents who entered their email in a survey question. Only counts respondents who opted in to marketing within the survey.",
+    formula:"Count(contacts WHERE source = 'Survey')",
+    lineage:[{label:"Visitor takes survey",sub:""},{label:"Provides email + opt-in",sub:""},{label:"Mailchimp creates contact",sub:""},{label:"Counted",sub:"4 contacts"}],
+    sources:[{sys:"Mailchimp Surveys",icon:"S"}],
+    settings:["Marketing opt-in: Required"],
+    trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"Low volume — only 4 contacts",status:"amber"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    ai:["Are my surveys converting?","Show survey responses with email opt-in"]},
+  "src-unknown":{title:"Source: Unknown",badge:{label:"Partial",cls:"partial"},
+    short:"Contacts whose original source could not be determined or was not recorded.",
+    long:"This typically means contacts existed before source tracking was added, were added via a deprecated integration, or had their source metadata stripped during migration. 360 contacts on this list.",
+    formula:"Count(contacts WHERE source IS NULL OR source = 'Unknown')",
+    lineage:[{label:"Contact added historically",sub:"Before source tracking"},{label:"Or via deprecated integration",sub:""},{label:"Source field missing",sub:""},{label:"Bucketed as Unknown",sub:""}],
+    sources:[{sys:"Mailchimp audience database",icon:"M"}],
+    settings:["Source attribution: Best-effort"],
+    trust:[{label:"Last updated",val:"12 minutes ago",status:"green"},{label:"Processing",val:"Complete",status:"green"},{label:"Known issues",val:"360 contacts have no source attribution",status:"amber"},{label:"Last definition change",val:"No recent changes",status:"green"}],
+    confusion:"'Unknown source' contacts can't be analyzed by acquisition channel. Where possible, tag them by sending re-permission campaigns through different channels and tracking which channel they confirm through.",
+    ai:["Can I trace these unknown contacts?","Send re-permission to attribute source","What's the engagement of Unknown contacts?"]},
   netsubgrowth:{title:"Total net subscriptions growth",badge:{label:"Official",cls:"official"},
     short:"Net change in subscribers per day (new subs minus losses).",
     long:"A positive number means your list is growing. Includes signups across all channels minus unsubs, hard bounces, and spam complaints. Compared to same period last year for context.",
